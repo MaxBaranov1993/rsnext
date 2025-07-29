@@ -349,15 +349,7 @@ export default function Home() {
                   </CardContent>
                 </Card>
               }>
-                <ProductCard product={{ 
-                  ...product, 
-                  id: product.id.toString(),
-                  sellerId: product.id.toString(),
-                  publishedAt: product.createdAt,
-                  category: product.category as ProductCategory,
-                  condition: product.condition as ProductCondition,
-                  seller: null 
-                }} />
+                <ProductCard product={product} />
               </Suspense>
             ))}
           </div>

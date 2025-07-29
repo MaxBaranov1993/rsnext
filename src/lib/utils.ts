@@ -43,14 +43,18 @@ export async function getSellerById(id: string): Promise<ProductSeller | null> {
 }
 
 // Получаем товар с данными продавца
-export async function getProductWithSeller(id: string): Promise<(Product & { seller: ProductSeller }) | null> {
-  const product = await getProductById(id);
-  if (!product) return null;
-  
-  const seller = await getSellerById(product.sellerId);
-  if (!seller) return null;
-  
-  return { ...product, seller };
+export async function getProductWithSeller(id: string): Promise<(Product & { seller: ProductSeller | null }) | null> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/products/${id}`);
+    if (!response.ok) {
+      return null;
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Ошибка загрузки товара:', error);
+    return null;
+  }
 }
 
 // Получаем все ID товаров для генерации статических путей
@@ -65,14 +69,18 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 // Получаем все товары с данными продавцов
-export async function getAllProductsWithSellers(): Promise<(Product & { seller: ProductSeller })[]> {
-  const products = await loadProducts();
-  const sellers = await loadSellers();
-  
-  return products.map(product => {
-    const seller = sellers.find(s => s.id === product.sellerId);
-    return { ...product, seller: seller! };
-  }).filter(product => product.seller);
+export async function getAllProductsWithSellers(): Promise<(Product & { seller: ProductSeller | null })[]> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/products`);
+    if (!response.ok) {
+      throw new Error('Ошибка загрузки товаров');
+    }
+    const data = await response.json();
+    return data.products || [];
+  } catch (error) {
+    console.error('Ошибка загрузки товаров:', error);
+    return [];
+  }
 }
 
 /**

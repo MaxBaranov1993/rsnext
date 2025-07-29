@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { api, Product } from "../api";
+import { Product, ProductSeller } from "@/types/product";
 
 export function useProducts(limit: number = 10) {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<(Product & { seller?: ProductSeller | null })[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -11,12 +11,13 @@ export function useProducts(limit: number = 10) {
   const fetchProducts = useCallback(async (pageNum: number = 1) => {
     try {
       setLoading(true);
-      const data = await api.getProducts({
-        page: pageNum,
-        limit: limit,
-        sortBy: 'publishedAt',
-        sortOrder: 'desc'
-      });
+      const response = await fetch(`/api/products?page=${pageNum}&limit=${limit}&sortBy=publishedAt&sortOrder=desc`);
+      
+      if (!response.ok) {
+        throw new Error('Ошибка загрузки продуктов');
+      }
+      
+      const data = await response.json();
       
       if (pageNum === 1) {
         setProducts(data.products);

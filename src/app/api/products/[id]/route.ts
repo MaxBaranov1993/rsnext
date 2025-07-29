@@ -7,48 +7,42 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const productId = params.id;
     
-    // Путь к JSON файлу с данными продуктов
+    // Путь к JSON файлам с данными
     const productsPath = path.join(process.cwd(), 'public', 'data', 'products.json');
     const sellersPath = path.join(process.cwd(), 'public', 'data', 'sellers.json');
     
     // Читаем файлы
     const productsData = fs.readFileSync(productsPath, 'utf8');
     const sellersData = fs.readFileSync(sellersPath, 'utf8');
-    
     const products = JSON.parse(productsData);
     const sellers = JSON.parse(sellersData);
     
-    // Находим продукт по ID
-    const product = products.products.find((p: any) => p.id === id);
+    // Создаем Map для быстрого поиска продавцов
+    const sellersMap = new Map(sellers.sellers.map((seller: any) => [seller.id, seller]));
+    
+    // Находим товар по ID
+    const product = products.products.find((p: any) => p.id === productId);
     
     if (!product) {
       return NextResponse.json(
-        { error: 'Продукт не найден' },
+        { error: 'Товар не найден' },
         { status: 404 }
       );
     }
     
-    // Находим продавца продукта
-    const seller = sellers.sellers.find((s: any) => s.id === product.sellerId);
-    
-    // Увеличиваем количество просмотров
-    product.views = (product.views || 0) + 1;
-    
-    // Обновляем файл с продуктами
-    fs.writeFileSync(productsPath, JSON.stringify(products, null, 2));
-    
-    // Возвращаем продукт с информацией о продавце
-    return NextResponse.json({
+    // Связываем товар с продавцом
+    const productWithSeller = {
       ...product,
-      seller
-    });
+      seller: sellersMap.get(product.sellerId) || null
+    };
     
+    return NextResponse.json(productWithSeller);
   } catch (error) {
-    console.error('Ошибка при загрузке продукта:', error);
+    console.error('Ошибка получения товара:', error);
     return NextResponse.json(
-      { error: 'Ошибка при загрузке продукта' },
+      { error: 'Внутренняя ошибка сервера' },
       { status: 500 }
     );
   }
