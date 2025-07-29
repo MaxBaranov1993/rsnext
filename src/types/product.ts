@@ -10,10 +10,27 @@ export type ProductCategory =
   | "kids" 
   | "goods";
 
+export interface CompanyInfo {
+  legalName: string;
+  inn: string;
+  address: string;
+  phone: string;
+  website: string;
+}
+
 export interface ProductSeller {
+  id: string;
   name: string;
   avatar: string;
   rating: number;
+  memberSince: string;
+  totalSales: number;
+  responseTime: string;
+  type: "individual" | "company";
+  location: string;
+  verified: boolean;
+  description: string;
+  companyInfo?: CompanyInfo;
 }
 
 export interface Product {
@@ -21,10 +38,11 @@ export interface Product {
   title: string;
   price: number;
   category: ProductCategory;
-  seller: ProductSeller;
+  sellerId: string;
   condition: ProductCondition;
   views: number;
   publishedAt: string;
+  description?: string;
 }
 
 export interface ProductCardProps {

@@ -2,213 +2,186 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState, useCallback } from "react";
-import Link from "next/link";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { Product, ProductSeller } from "@/types/product";
 import { useProductImages } from "@/lib/hooks/useProductImages";
-import { ProductCardProps } from "@/types/product";
+import { Suspense } from "react";
+import { Heart, MapPin, User, Star } from "lucide-react";
+import Link from "next/link";
+import { truncateProductTitleForCard } from "@/lib/utils";
 
-const conditionLabels = {
-  new: "Новое",
-  used: "Б/у",
-  excellent: "Отличное",
-  good: "Хорошее"
-};
-
-const conditionColors = {
-  new: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
-  used: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-  excellent: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-  good: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
-};
+interface ProductCardProps {
+  product: Product & { seller: ProductSeller };
+}
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  // Используем хук для загрузки изображений
+  return (
+    <Suspense fallback={<ProductCardSkeleton />}>
+      <ProductCardContent product={product} />
+    </Suspense>
+  );
+}
+
+function ProductCardContent({ product }: ProductCardProps) {
   const { images, loading, error } = useProductImages({
     productTitle: product.title,
     category: product.category,
     count: 3
   });
 
-  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-    // Если изображение не загрузилось, переключаемся на следующее
-    const target = e.target as HTMLImageElement;
-    target.style.display = 'none';
-    if (images.length > 1) {
-      setCurrentImageIndex((prev) => 
-        prev === images.length - 1 ? 0 : prev + 1
-      );
-    }
-  }, [images.length]);
-
-  const handleNextImage = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setCurrentImageIndex((prev) => 
-      prev === images.length - 1 ? 0 : prev + 1
-    );
-  }, [images.length]);
-
-  const handleImageSelect = useCallback((e: React.MouseEvent, index: number) => {
-    e.preventDefault();
-    setCurrentImageIndex(index);
-  }, []);
-
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('sr-RS', {
-      style: 'currency',
-      currency: 'RSD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
+    return new Intl.NumberFormat('ru-RU').format(price);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return "Сегодня";
-    if (diffDays === 2) return "Вчера";
-    if (diffDays <= 7) return `${diffDays - 1} дней назад`;
-    
-    return date.toLocaleDateString('sr-RS', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+  const getConditionText = (condition: string) => {
+    const conditions = {
+      new: "Новый",
+      excellent: "Отличное",
+      good: "Хорошее",
+      fair: "Удовлетворительное"
+    };
+    return conditions[condition as keyof typeof conditions] || "Не указано";
   };
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <svg
-        key={i}
-        className={`w-3 h-3 ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`}
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-      </svg>
-    ));
-  };
+  // Если загрузка или ошибка, показываем скелетон
+  if (loading || error || !images || images.length === 0) {
+    return <ProductCardSkeleton />;
+  }
 
   return (
     <Link href={`/product/${product.id}`} className="block">
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      <Card className="group cursor-pointer hover:shadow-lg transition-all duration-200 border-0 bg-white dark:bg-slate-900 overflow-hidden">
         <CardContent className="p-0">
-          <div className="flex">
-            {/* Левая часть - информация о товаре */}
-            <div className="flex-1 p-4">
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
-                {product.title}
-              </h3>
-              
-              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-3">
-                {formatPrice(product.price)}
+          {/* Image Carousel */}
+          <div className="relative">
+            <Carousel 
+              className="w-full"
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+            >
+              <CarouselContent>
+                {images.map((image, index) => (
+                  <CarouselItem key={index}>
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        src={image}
+                        alt={`${product.title} - фото ${index + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {images.length > 1 && (
+                <>
+                  <CarouselPrevious className="h-8 w-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm" />
+                  <CarouselNext className="h-8 w-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm" />
+                </>
+              )}
+            </Carousel>
+            
+            {/* Индикаторы для карусели */}
+            {images.length > 1 && (
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                {images.map((_, index) => (
+                  <div
+                    key={index}
+                    className="w-2 h-2 rounded-full bg-white/60 dark:bg-slate-900/60"
+                  />
+                ))}
               </div>
-              
-              {/* Продавец */}
-              <div className="flex items-center mb-3">
-                <Avatar className="w-8 h-8 mr-2">
-                  <AvatarImage src={product.seller.avatar} alt={product.seller.name} />
-                  <AvatarFallback>{product.seller.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {product.seller.name}
-                  </p>
-                  <div className="flex items-center">
-                    {renderStars(product.seller.rating)}
-                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                      ({product.seller.rating})
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Состояние товара */}
-              <Badge className={`mb-3 ${conditionColors[product.condition]}`}>
-                {conditionLabels[product.condition]}
+            )}
+            
+            {/* Condition Badge */}
+            <div className="absolute top-2 left-2 z-10">
+              <Badge variant="secondary" className="text-xs bg-white/90 dark:bg-slate-900/90">
+                {getConditionText(product.condition)}
               </Badge>
-              
-              {/* Просмотры и дата */}
-              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                <div className="flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  {product.views} просмотров
-                </div>
-                <span>{formatDate(product.publishedAt)}</span>
+            </div>
+            
+            {/* Favorite Button */}
+            <div className="absolute top-2 right-2 z-10">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm hover:bg-white/90 dark:hover:bg-slate-900/90"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  // Здесь можно добавить логику добавления в избранное
+                }}
+              >
+                <Heart className="h-4 w-4 text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Product Info */}
+          <div className="p-3 space-y-2">
+            {/* Title */}
+            <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 line-clamp-2 leading-tight">
+              {truncateProductTitleForCard(product.title)}
+            </h3>
+            
+            {/* Seller Info */}
+            <div className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+              <User className="w-3 h-3" />
+              <span className="truncate">{product.seller.name}</span>
+              {product.seller.verified && (
+                <Badge variant="outline" className="text-xs px-1 py-0 h-4">
+                  ✓
+                </Badge>
+              )}
+              <div className="flex items-center space-x-1">
+                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                <span>{product.seller.rating}</span>
               </div>
             </div>
             
-            {/* Правая часть - галерея */}
-            <div className="w-32 h-32 sm:w-40 sm:h-40 relative">
-              {loading ? (
-                <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              ) : error ? (
-                <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
-              ) : images.length > 0 ? (
-                <>
-                  <img
-                    src={images[currentImageIndex]}
-                    alt={product.title}
-                    className="w-full h-full object-cover"
-                    onError={handleImageError}
-                  />
-                  
-                  {/* Индикаторы изображений */}
-                  {images.length > 1 && (
-                    <div className="absolute bottom-2 left-2 right-2 flex justify-center space-x-1">
-                      {images.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={(e) => handleImageSelect(e, index)}
-                          className={`w-2 h-2 rounded-full transition-colors ${
-                            index === currentImageIndex 
-                              ? 'bg-white' 
-                              : 'bg-white/50 hover:bg-white/75'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                  
-                  {/* Кнопка "Следующее изображение" */}
-                  {images.length > 1 && (
-                    <button
-                      onClick={handleNextImage}
-                      className="absolute top-2 right-2 w-6 h-6 bg-black/50 hover:bg-black/75 text-white rounded-full flex items-center justify-center transition-colors"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  )}
-                </>
-              ) : (
-                <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              )}
+            {/* Location */}
+            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center">
+              <MapPin className="w-3 h-3 mr-1" />
+              <span className="truncate">{product.seller.location}</span>
+            </p>
+            
+            {/* Price */}
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                {formatPrice(product.price)} ₽
+              </span>
+              <div className="flex items-center space-x-1 text-xs text-slate-500 dark:text-slate-400">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span>{product.views}</span>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
     </Link>
+  );
+}
+
+function ProductCardSkeleton() {
+  return (
+    <Card className="border-0 bg-white dark:bg-slate-900 overflow-hidden">
+      <CardContent className="p-0">
+        <div className="aspect-square bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+        <div className="p-3 space-y-2">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          <div className="flex items-center justify-between">
+            <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-20"></div>
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-12"></div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,0 +1,148 @@
+{
+  "sellers": [
+    {
+      "id": "1",
+      "name": "Александар Петровић",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.7,
+      "memberSince": "2022-03-15T00:00:00Z",
+      "totalSales": 23,
+      "responseTime": "В течение 2 часов",
+      "type": "individual",
+      "location": "Београд",
+      "verified": true,
+      "description": "Продаю качественные товары. Всегда на связи, быстро отвечаю на сообщения."
+    },
+    {
+      "id": "2",
+      "name": "Марија Стојановић",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.9,
+      "memberSince": "2021-08-20T00:00:00Z",
+      "totalSales": 45,
+      "responseTime": "В течение 1 часа",
+      "type": "individual",
+      "location": "Нови Сад",
+      "verified": true,
+      "description": "Добросовестный продавец с большим опытом. Все товары в отличном состоянии."
+    },
+    {
+      "id": "3",
+      "name": "Димитрије Козловић",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.5,
+      "memberSince": "2023-01-10T00:00:00Z",
+      "totalSales": 12,
+      "responseTime": "В течение 3 часов",
+      "type": "individual",
+      "location": "Ниш",
+      "verified": false,
+      "description": "Новый продавец, но уже зарекомендовал себя с лучшей стороны."
+    },
+    {
+      "id": "4",
+      "name": "Јелена Вуковић",
+      "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.8,
+      "memberSince": "2020-11-05T00:00:00Z",
+      "totalSales": 67,
+      "responseTime": "В течение 30 минут",
+      "type": "individual",
+      "location": "Крагујевац",
+      "verified": true,
+      "description": "Проверенный продавец с отличной репутацией. Быстрая доставка."
+    },
+    {
+      "id": "5",
+      "name": "Срђан Морозовић",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.6,
+      "memberSince": "2022-07-12T00:00:00Z",
+      "totalSales": 34,
+      "responseTime": "В течение 4 часов",
+      "type": "individual",
+      "location": "Суботица",
+      "verified": true,
+      "description": "Специализируюсь на электронике и гаджетах. Все товары проверены."
+    },
+    {
+      "id": "6",
+      "name": "Ана Смиљанић",
+      "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.4,
+      "memberSince": "2023-05-18T00:00:00Z",
+      "totalSales": 8,
+      "responseTime": "В течение 5 часов",
+      "type": "individual",
+      "location": "Зрењанин",
+      "verified": false,
+      "description": "Продаю вещи из собственного гардероба. Все в идеальном состоянии."
+    },
+    {
+      "id": "7",
+      "name": "Игор Николић",
+      "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.7,
+      "memberSince": "2021-12-03T00:00:00Z",
+      "totalSales": 28,
+      "responseTime": "В течение 2 часов",
+      "type": "individual",
+      "location": "Панчево",
+      "verified": true,
+      "description": "Продаю автомобильные запчасти и аксессуары. Гарантия качества."
+    },
+    {
+      "id": "8",
+      "name": "Олга Романовић",
+      "avatar": "https://images.unsplash.com/photo-1546961329-78bef0414d7c?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.9,
+      "memberSince": "2020-06-22T00:00:00Z",
+      "totalSales": 89,
+      "responseTime": "В течение 1 часа",
+      "type": "individual",
+      "location": "Чачак",
+      "verified": true,
+      "description": "Опытный продавец с большим количеством положительных отзывов."
+    },
+    {
+      "id": "9",
+      "name": "Apple Store",
+      "avatar": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.8,
+      "memberSince": "2020-03-15T00:00:00Z",
+      "totalSales": 156,
+      "responseTime": "В течение 30 минут",
+      "type": "company",
+      "location": "Београд",
+      "verified": true,
+      "description": "Официальный магазин Apple в Сербии. Гарантия производителя на все товары.",
+      "companyInfo": {
+        "legalName": "ДОО 'Епл Србија'",
+        "inn": "100123456",
+        "address": "г. Београд, ул. Кнез Михајлова, бр. 1",
+        "phone": "+381 11 123-45-67",
+        "website": "https://www.apple.com/rs/"
+      }
+    },
+    {
+      "id": "10",
+      "name": "Аутосалон Премијум",
+      "avatar": "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.9,
+      "memberSince": "2019-06-10T00:00:00Z",
+      "totalSales": 342,
+      "responseTime": "В течение 2 часов",
+      "type": "company",
+      "location": "Београд",
+      "verified": true,
+      "description": "Авторизованный дилер премиальных автомобильных брендов. Полный сервис.",
+      "companyInfo": {
+        "legalName": "ДОО 'Аутосалон Премијум'",
+        "inn": "100987654",
+        "address": "г. Београд, Нови Београд, ул. Милентија Поповића, бр. 39",
+        "phone": "+381 11 987-65-43",
+        "website": "https://premium-auto.rs"
+      }
+    }
+  ]
+}
