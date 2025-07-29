@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Product, ProductSeller } from "@/types/product";
 import { useProductImages } from "@/lib/hooks/useProductImages";
+import { useFavorites } from "@/lib/contexts/FavoritesContext";
 import { Heart, MessageCircle, Share2, Star, MapPin, Eye, Calendar, Map, Phone, Shield, Building2, ArrowLeft } from "lucide-react";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { Header } from "./Header";
@@ -18,7 +19,6 @@ interface ProductDetailProps {
 }
 
 export function ProductDetail({ product }: ProductDetailProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -30,6 +30,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
     category: product.category,
     count: 5
   });
+
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU').format(price);
@@ -276,10 +278,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsFavorite(!isFavorite)}
-                  className={`h-10 w-10 flex-shrink-0 ${isFavorite ? 'text-red-500' : 'text-gray-600 dark:text-gray-400'}`}
+                  onClick={() => toggleFavorite(product)}
+                  className={`h-10 w-10 flex-shrink-0 ${isFavorite(product.id) ? 'text-red-500' : 'text-gray-600 dark:text-gray-400'}`}
                 >
-                  <Heart className="h-5 w-5" fill={isFavorite ? 'currentColor' : 'none'} />
+                  <Heart className="h-5 w-5" fill={isFavorite(product.id) ? 'currentColor' : 'none'} />
                 </Button>
               </div>
               

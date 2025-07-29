@@ -6,6 +6,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Button } from "@/components/ui/button";
 import { Product, ProductSeller } from "@/types/product";
 import { useProductImages } from "@/lib/hooks/useProductImages";
+import { useFavorites } from "@/lib/contexts/FavoritesContext";
 import { Suspense } from "react";
 import { Heart, MapPin, User, Star } from "lucide-react";
 import Link from "next/link";
@@ -29,6 +30,7 @@ function ProductCardContent({ product }: ProductCardProps) {
     category: product.category,
     count: 3
   });
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU').format(price);
@@ -111,10 +113,14 @@ function ProductCardContent({ product }: ProductCardProps) {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  // Здесь можно добавить логику добавления в избранное
+                  toggleFavorite(product);
                 }}
               >
-                <Heart className="h-4 w-4 text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400" />
+                <Heart className={`h-4 w-4 ${
+                  isFavorite(product.id) 
+                    ? "text-red-500 fill-red-500" 
+                    : "text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                }`} />
               </Button>
             </div>
           </div>

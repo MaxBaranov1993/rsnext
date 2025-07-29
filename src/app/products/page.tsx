@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { getAllProductsWithSellers } from '@/lib/utils';
 import { ProductCard } from '@/components/ProductCard';
 import { Product, ProductSeller } from '@/types/product';
@@ -29,12 +30,6 @@ interface FilterState {
   electronicsCondition?: string[];
 }
 
-interface ProductsPageProps {
-  searchParams: {
-    category?: string;
-  };
-}
-
 // Функция для получения названия категории
 function getCategoryName(categoryId: string): string {
   const categories: Record<string, string> = {
@@ -50,12 +45,12 @@ function getCategoryName(categoryId: string): string {
   return categories[categoryId] || "Товары";
 }
 
-export default function ProductsPage({ searchParams }: ProductsPageProps) {
+export default function ProductsPage() {
+  const searchParams = useSearchParams();
   const [productsWithSellers, setProductsWithSellers] = useState<(Product & { seller: ProductSeller })[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filteredProducts, setFilteredProducts] = useState<(Product & { seller: ProductSeller })[]>([]);
   const [maxPrice, setMaxPrice] = useState(1000000);
-  const selectedCategory = searchParams.category;
+  const selectedCategory = searchParams.get('category');
 
   // Состояние фильтров
   const [filters, setFilters] = useState<FilterState>({
@@ -94,8 +89,8 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
     loadProducts();
   }, []);
 
-  // Фильтруем товары
-  useEffect(() => {
+  // Фильтруем товары с мемоизацией
+  const filteredProducts = useMemo(() => {
     let filtered = productsWithSellers;
 
     // Фильтр по категории
@@ -151,12 +146,12 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
       // Здесь можно добавить логику фильтрации по бренду
     }
 
-    setFilteredProducts(filtered);
+    return filtered;
   }, [productsWithSellers, selectedCategory, filters]);
 
-  const handleFiltersChange = (newFilters: FilterState) => {
+  const handleFiltersChange = useCallback((newFilters: FilterState) => {
     setFilters(newFilters);
-  };
+  }, []);
 
   if (loading) {
     return (
