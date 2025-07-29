@@ -1,36 +1,146 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# rSALE - Платформа для умных продаж
 
-## Getting Started
+Современное веб-приложение для автоматизации продаж, созданное с использованием Next.js 14, TypeScript и shadcn/ui.
 
-First, run the development server:
+## 🚀 Технологии
+
+- **Next.js 14** - React фреймворк с App Router
+- **TypeScript** - Типизированный JavaScript
+- **Tailwind CSS** - Utility-first CSS фреймворк
+- **shadcn/ui** - Современные React компоненты
+- **Radix UI** - Примитивы для доступности
+
+## ✨ Возможности
+
+- 🎨 Современный и отзывчивый дизайн
+- 🌙 Поддержка темной темы
+- 📱 Адаптивная верстка для всех устройств
+- ⚡ Быстрая загрузка и оптимизация
+- 🔍 SEO оптимизация
+- ♿ Доступность (a11y)
+
+## 📋 Страницы
+
+- **Главная** (`/`) - Лендинг с описанием продукта
+- **Аналитика** (`/analytics`) - Дашборд с метриками продаж
+- **Цены** (`/pricing`) - Тарифные планы
+- **О нас** (`/about`) - Информация о компании
+
+## 🛠️ Установка и запуск
+
+### Предварительные требования
+
+- Node.js 18+ 
+- npm или yarn
+
+### Установка зависимостей
+
+```bash
+npm install
+# или
+yarn install
+```
+
+### Запуск в режиме разработки
 
 ```bash
 npm run dev
-# or
+# или
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000) в браузере.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Сборка для продакшена
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+# или
+yarn build
+```
 
-## Learn More
+### Запуск продакшен версии
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm start
+# или
+yarn start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Структура проекта
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+rsalenext/
+├── src/
+│   ├── app/                 # App Router страницы
+│   │   ├── analytics/       # Страница аналитики
+│   │   ├── pricing/         # Страница цен
+│   │   ├── about/           # Страница о нас
+│   │   ├── globals.css      # Глобальные стили
+│   │   ├── layout.tsx       # Корневой layout
+│   │   └── page.tsx         # Главная страница
+│   ├── components/          # React компоненты
+│   │   └── ui/             # shadcn/ui компоненты
+│   └── lib/                # Утилиты и конфигурация
+├── public/                 # Статические файлы
+├── components.json         # Конфигурация shadcn/ui
+├── tailwind.config.ts     # Конфигурация Tailwind
+└── package.json           # Зависимости проекта
+```
 
-## Deploy on Vercel
+## 🎨 Компоненты
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Проект использует shadcn/ui компоненты:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Button** - Кнопки различных стилей
+- **Card** - Карточки для контента
+- **Badge** - Бейджи и метки
+- **Avatar** - Аватары пользователей
+- **NavigationMenu** - Навигационное меню
+- **DropdownMenu** - Выпадающие меню
+- **Input** - Поля ввода
+- **Label** - Подписи к полям
+- **Form** - Формы
+
+## 🌙 Темная тема
+
+Проект поддерживает автоматическое переключение темной темы в зависимости от системных настроек пользователя.
+
+## 📱 Адаптивность
+
+Все страницы адаптированы для:
+- Мобильных устройств (320px+)
+- Планшетов (768px+)
+- Десктопов (1024px+)
+
+## 🔧 Настройка
+
+### Добавление новых компонентов shadcn/ui
+
+```bash
+npx shadcn@latest add [component-name]
+```
+
+### Настройка цветовой схемы
+
+Отредактируйте `tailwind.config.ts` для изменения цветовой палитры.
+
+## 📄 Лицензия
+
+MIT License
+
+## 🤝 Вклад в проект
+
+1. Форкните репозиторий
+2. Создайте ветку для новой функции (`git checkout -b feature/amazing-feature`)
+3. Зафиксируйте изменения (`git commit -m 'Add amazing feature'`)
+4. Отправьте в ветку (`git push origin feature/amazing-feature`)
+5. Откройте Pull Request
+
+## 📞 Поддержка
+
+Если у вас есть вопросы или предложения, создайте issue в репозитории.
+
+---
+
+Создано с ❤️ командой rSALE
