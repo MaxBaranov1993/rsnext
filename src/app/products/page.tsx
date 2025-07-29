@@ -54,6 +54,7 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
   const [productsWithSellers, setProductsWithSellers] = useState<(Product & { seller: ProductSeller })[]>([]);
   const [loading, setLoading] = useState(true);
   const [filteredProducts, setFilteredProducts] = useState<(Product & { seller: ProductSeller })[]>([]);
+  const [maxPrice, setMaxPrice] = useState(1000000);
   const selectedCategory = searchParams.category;
 
   // Состояние фильтров
@@ -65,13 +66,24 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
     verifiedOnly: false
   });
 
-  // Загружаем товары
+  // Загружаем товары и устанавливаем максимальную цену
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
       try {
         const products = await getAllProductsWithSellers();
         setProductsWithSellers(products);
+        
+        // Вычисляем максимальную цену
+        const prices = products.map(product => product.price);
+        const max = Math.max(...prices);
+        setMaxPrice(max);
+        
+        // Обновляем фильтр по цене с правильным максимальным значением
+        setFilters(prev => ({
+          ...prev,
+          priceRange: [0, max]
+        }));
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
       } finally {

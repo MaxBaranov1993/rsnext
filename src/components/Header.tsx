@@ -12,6 +12,7 @@ export function Header() {
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [selectedCity, setSelectedCity] = useState("Москва");
   const [selectedLanguage, setSelectedLanguage] = useState("Русский");
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Состояние авторизации
   
   const serbianCities = [
     "Белград",
@@ -52,6 +53,17 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Проверяем авторизацию при загрузке (можно заменить на реальную проверку)
+  useEffect(() => {
+    // Имитация проверки авторизации - можно заменить на реальную логику
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuthenticated(!!token);
+    };
+    
+    checkAuth();
+  }, []);
+
   const handleMobileSearchClick = () => {
     setShowMobileSearch(!showMobileSearch);
   };
@@ -62,6 +74,11 @@ export function Header() {
 
   const handleLanguageSelect = (language: string) => {
     setSelectedLanguage(language);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    setIsAuthenticated(false);
   };
 
   const getCurrentLanguage = () => {
@@ -90,7 +107,7 @@ export function Header() {
       )}
 
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 sticky top-0 z-40">
+      <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 sm:sticky sm:top-0 z-40">
         {/* Language Selector - Desktop Only */}
         <div className="hidden sm:block border-b border-gray-200 dark:border-gray-700">
           <div className="container mx-auto px-4 py-1">
@@ -98,7 +115,7 @@ export function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -108,7 +125,7 @@ export function Header() {
                     </svg>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="max-h-60 overflow-y-auto">
+                <DropdownMenuContent align="start">
                   {serbianCities.map((city) => (
                     <DropdownMenuItem 
                       key={city}
@@ -258,12 +275,52 @@ export function Header() {
                 </Badge>
               </Button>
               
-              <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span className="hidden lg:inline">Войти</span>
-              </Button>
+              {isAuthenticated ? (
+                // Если пользователь авторизован - показываем только профиль
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span className="hidden lg:inline">Профиль</span>
+                      <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Личный кабинет
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Выйти
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                // Если пользователь не авторизован - показываем кнопки входа и регистрации
+                <div className="flex items-center space-x-2">
+                  <Link href="/login">
+                    <Button variant="outline" size="sm">
+                      Войти
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+                      Регистрация
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
