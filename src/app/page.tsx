@@ -19,6 +19,23 @@ import { FavoritesModal } from "@/components/FavoritesModal";
 import { ProductCategory } from "@/types/product";
 import { ProductCondition } from "@/types/product";
 import { useFavorites } from "@/lib/contexts/FavoritesContext";
+import { 
+  Car, 
+  Home as HomeIcon, 
+  Monitor, 
+  Shirt, 
+  Sofa, 
+  Wrench, 
+  Baby, 
+  Package,
+  Heart,
+  Plus,
+  User,
+  MessageCircle,
+  Settings,
+  LogOut,
+  Search
+} from "lucide-react";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -68,49 +85,49 @@ export default function Home() {
     {
       id: "cars",
       name: "Авто",
-      icon: "/svg/categoryCar.svg",
+      icon: Car,
       color: "bg-green-100"
     },
     {
       id: "real_estate",
       name: "Недвижимость",
-      icon: "/svg/categoryEstate.svg",
+      icon: HomeIcon,
       color: "bg-blue-100"
     },
     {
       id: "electronics",
       name: "Электроника",
-      icon: "/svg/categoryComputer.svg",
+      icon: Monitor,
       color: "bg-purple-100"
     },
     {
       id: "clothing",
       name: "Одежда",
-      icon: "/svg/categoryClothes.svg",
+      icon: Shirt,
       color: "bg-pink-100"
     },
     {
       id: "furniture",
       name: "Мебель",
-      icon: "/svg/categoryFurniture.svg",
+      icon: Sofa,
       color: "bg-orange-100"
     },
     {
       id: "services",
       name: "Услуги",
-      icon: "/svg/categoryServices.svg",
+      icon: Wrench,
       color: "bg-yellow-100"
     },
     {
       id: "kids",
       name: "Детям",
-      icon: "/svg/categorykids.svg",
+      icon: Baby,
       color: "bg-indigo-100"
     },
     {
       id: "goods",
       name: "Товары",
-      icon: "/svg/categoryGoods.svg",
+      icon: Package,
       color: "bg-red-100"
     }
   ];
@@ -243,10 +260,8 @@ export default function Home() {
                   <CardContent className="p-3 h-full flex items-center justify-center">
                     <div className="flex items-center space-x-3 w-full">
                       <div className={`w-8 h-8 ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm flex-shrink-0`}>
-                        <img 
-                          src={category.icon} 
-                          alt={category.name}
-                          className="w-5 h-5 object-contain group-hover:drop-shadow-md transition-all duration-200"
+                        <category.icon 
+                          className="w-5 h-5 text-slate-600 group-hover:text-slate-800 transition-colors duration-200"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -275,10 +290,8 @@ export default function Home() {
                           <CardContent className="p-2 h-full flex flex-col items-center justify-center">
                             <div className="flex flex-col items-center space-y-1">
                               <div className={`w-10 h-10 ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm`}>
-                                <img 
-                                  src={category.icon} 
-                                  alt={category.name}
-                                  className="w-6 h-6 object-contain group-hover:drop-shadow-md transition-all duration-200"
+                                <category.icon 
+                                  className="w-6 h-6 text-slate-600 group-hover:text-slate-800 transition-colors duration-200"
                                 />
                               </div>
                               <div className="text-center">

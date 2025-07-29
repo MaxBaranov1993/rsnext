@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActiveListings } from "@/components/profile/ActiveListings";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { 
   User, 
   Mail, 
@@ -197,6 +198,15 @@ export function ProfileForm() {
       </div>
 
       <div className="container mx-auto px-4 py-4 sm:py-8">
+        {/* Хлебные крошки */}
+        <div className="mb-6">
+          <Breadcrumbs 
+            items={[
+              { label: 'Профиль' }
+            ]} 
+          />
+        </div>
+
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1">

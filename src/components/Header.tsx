@@ -120,7 +120,7 @@ export function Header() {
               autoFocus
             />
             <Button 
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-orange-500 hover:bg-orange-600 text-white text-sm"
+              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-black hover:bg-gray-800 text-white text-sm"
               size="sm"
             >
               Найти
@@ -209,7 +209,7 @@ export function Header() {
                   className="pr-16"
                 />
                 <Button 
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-orange-500 hover:bg-orange-600 text-white text-sm"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-black hover:bg-gray-800 text-white text-sm"
                   size="sm"
                 >
                   Найти
@@ -224,7 +224,7 @@ export function Header() {
                   className="pr-16"
                 />
                 <Button 
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-orange-500 hover:bg-orange-600 text-white text-sm"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-black hover:bg-gray-800 text-white text-sm"
                   size="sm"
                 >
                   Найти
@@ -233,8 +233,6 @@ export function Header() {
             </div>
             
             <div className="hidden sm:flex items-center space-x-4">
-              <FavoritesButton />
-              
               {isAuthenticated && (
                 <Button asChild variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">
                   <Link href="/add-listing">
@@ -245,11 +243,12 @@ export function Header() {
                 </Button>
               )}
               
+              <FavoritesButton />
+              
               <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/20 relative">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <span className="hidden lg:inline">Сообщения</span>
                 <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
                   3
                 </Badge>

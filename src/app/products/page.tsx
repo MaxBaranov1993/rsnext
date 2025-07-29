@@ -7,6 +7,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { Product, ProductSeller } from '@/types/product';
 import { Header } from '@/components/Header';
 import { ProductFilters } from '@/components/ProductFilters';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, X, Filter, Plus } from 'lucide-react';
@@ -173,6 +174,16 @@ export default function ProductsPage() {
       <Header />
 
       <div className="container mx-auto px-4 py-8">
+        {/* Хлебные крошки */}
+        <div className="mb-6">
+          <Breadcrumbs 
+            items={[
+              { label: 'Товары', href: '/products' },
+              ...(selectedCategory ? [{ label: getCategoryName(selectedCategory) }] : [])
+            ]} 
+          />
+        </div>
+
         {/* Заголовок и фильтры */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -191,14 +202,6 @@ export default function ProductsPage() {
             </div>
             
             <div className="flex items-center space-x-3">
-              {/* Кнопка добавления объявления */}
-              <Button asChild>
-                <Link href="/add-listing">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Добавить объявление
-                </Link>
-              </Button>
-              
               {/* Кнопка очистки фильтра */}
               {selectedCategory && (
                 <Link href="/products">
