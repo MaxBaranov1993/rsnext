@@ -9,7 +9,7 @@ import { Header } from '@/components/Header';
 import { ProductFilters } from '@/components/ProductFilters';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, X, Filter } from 'lucide-react';
+import { ArrowLeft, X, Filter, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 interface FilterState {
@@ -190,15 +190,25 @@ export default function ProductsPage() {
               </p>
             </div>
             
-            {/* Кнопка очистки фильтра */}
-            {selectedCategory && (
-              <Link href="/products">
-                <Button variant="outline" size="sm" className="flex items-center space-x-2">
-                  <X className="h-4 w-4" />
-                  <span>Очистить фильтр</span>
-                </Button>
-              </Link>
-            )}
+            <div className="flex items-center space-x-3">
+              {/* Кнопка добавления объявления */}
+              <Button asChild>
+                <Link href="/add-listing">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Добавить объявление
+                </Link>
+              </Button>
+              
+              {/* Кнопка очистки фильтра */}
+              {selectedCategory && (
+                <Link href="/products">
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                    <X className="h-4 w-4" />
+                    <span>Очистить фильтр</span>
+                  </Button>
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Активный фильтр */}

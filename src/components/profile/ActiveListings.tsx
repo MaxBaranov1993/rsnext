@@ -9,7 +9,9 @@ import { ProductCard } from "@/components/ProductCard";
 import { productsData, ProductData } from "@/data/products";
 import { useProductImages } from "@/lib/hooks/useProductImages";
 import { EditListingModal } from "@/components/profile/EditListingModal";
-import { Edit, Eye, Trash2, User, Star, MapPin, CheckCircle, XCircle, Package } from "lucide-react";
+import { AddListingModal } from "../AddListingModal";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Edit, Eye, Trash2, User, Star, MapPin, CheckCircle, XCircle, Package, Plus } from "lucide-react";
 import Link from "next/link";
 
 interface ActiveListingsProps {
@@ -20,16 +22,17 @@ export function ActiveListings({ sellerName }: ActiveListingsProps) {
   const [activeListings, setActiveListings] = useState<ProductData[]>([]);
   const [soldListings, setSoldListings] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const [editingListing, setEditingListing] = useState<ProductData | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'active' | 'sold'>('active');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingListing, setEditingListing] = useState<ProductData | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     // Имитация загрузки данных
     setTimeout(() => {
       // Фильтруем продукты, принадлежащие текущему продавцу
       const userListings = Object.values(productsData).filter(
-        product => product.seller.name === sellerName
+        product => product.seller?.name === sellerName
       );
       setActiveListings(userListings);
       setLoading(false);
@@ -68,6 +71,38 @@ export function ActiveListings({ sellerName }: ActiveListingsProps) {
     console.log("Объявление отмечено как проданное:", listingId);
   };
 
+  const handleAddListing = (data: any) => {
+    // В реальном приложении здесь был бы API запрос для создания объявления
+    console.log("Новое объявление:", data);
+    
+    // Имитация добавления нового объявления
+    const newListing: ProductData = {
+      id: Date.now().toString(),
+      title: data.title,
+      price: data.price,
+      category: data.category,
+      condition: data.condition,
+      views: 0,
+      publishedAt: new Date().toISOString(),
+      description: data.description,
+      seller: {
+        id: "1",
+        name: sellerName,
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+        rating: 4.7,
+        memberSince: "2022-03-15T00:00:00Z",
+        totalSales: 23,
+        responseTime: "В течение 2 часов",
+        type: "individual",
+        location: data.location,
+        verified: true,
+        description: "Продаю качественные товары."
+      }
+    };
+    
+    setActiveListings(prev => [newListing, ...prev]);
+  };
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -91,188 +126,150 @@ export function ActiveListings({ sellerName }: ActiveListingsProps) {
 
   if (activeListings.length === 0) {
     return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <div className="space-y-4">
-            <div className="text-6xl text-slate-300 dark:text-slate-600">📝</div>
-            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">
-              У вас пока нет активных объявлений
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400">
-              Создайте первое объявление, чтобы начать продавать
-            </p>
-            <Button asChild>
-              <Link href="/products">Создать объявление</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        {/* Кнопка добавления */}
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Мои объявления
+          </h2>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Добавить объявление
+          </Button>
+        </div>
+
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="space-y-4">
+              <div className="text-6xl text-slate-300 dark:text-slate-600">📝</div>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">
+                У вас пока нет активных объявлений
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400">
+                Создайте первое объявление, чтобы начать продавать
+              </p>
+              <Button onClick={() => setIsAddModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Создать объявление
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <AddListingModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSubmit={handleAddListing}
+        />
+      </div>
     );
   }
 
   return (
     <div className="space-y-6">
-             {/* Статистика */}
-       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-         <Card>
-           <CardContent className="p-4 text-center">
-             <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-               {activeListings.filter(listing => !soldListings.has(listing.id)).length}
-             </div>
-             <div className="text-sm text-slate-600 dark:text-slate-400">
-               Активных объявлений
-             </div>
-           </CardContent>
-         </Card>
-         <Card>
-           <CardContent className="p-4 text-center">
-             <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-               {activeListings.filter(listing => !soldListings.has(listing.id)).reduce((sum, listing) => sum + listing.views, 0)}
-             </div>
-             <div className="text-sm text-slate-600 dark:text-slate-400">
-               Всего просмотров
-             </div>
-           </CardContent>
-         </Card>
-         <Card>
-           <CardContent className="p-4 text-center">
-             <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-               {activeListings.filter(listing => !soldListings.has(listing.id)).reduce((sum, listing) => sum + listing.price, 0).toLocaleString('ru-RU')}
-             </div>
-             <div className="text-sm text-slate-600 dark:text-slate-400">
-               Общая стоимость
-             </div>
-           </CardContent>
-         </Card>
-         <Card>
-           <CardContent className="p-4 text-center">
-             <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-               {activeListings.filter(listing => !soldListings.has(listing.id)).length > 0 
-                 ? Math.round(activeListings.filter(listing => !soldListings.has(listing.id)).reduce((sum, listing) => sum + listing.seller.rating, 0) / activeListings.filter(listing => !soldListings.has(listing.id)).length * 10) / 10
-                 : 0
-               }
-             </div>
-             <div className="text-sm text-slate-600 dark:text-slate-400">
-               Средний рейтинг
-             </div>
-           </CardContent>
-         </Card>
-       </div>
+      {/* Заголовок и кнопка добавления */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+          Мои объявления
+        </h2>
+        <Button onClick={() => setIsAddModalOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Добавить объявление
+        </Button>
+      </div>
 
-             {/* Список объявлений */}
-       <div className="space-y-4">
-         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
-           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-             <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">
-               Ваши объявления
-             </h3>
-             
-             {/* Вкладки */}
-             <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-               <Button
-                 variant={activeTab === 'active' ? 'default' : 'ghost'}
-                 size="sm"
-                 onClick={() => setActiveTab('active')}
-                 className="text-xs"
-               >
-                 <Package className="h-3 w-3 mr-1" />
-                 Активные
-                 ({activeListings.filter(listing => !soldListings.has(listing.id)).length})
-               </Button>
-               <Button
-                 variant={activeTab === 'sold' ? 'default' : 'ghost'}
-                 size="sm"
-                 onClick={() => setActiveTab('sold')}
-                 className="text-xs"
-               >
-                 <CheckCircle className="h-3 w-3 mr-1" />
-                 Продано
-                 ({activeListings.filter(listing => soldListings.has(listing.id)).length})
-               </Button>
-             </div>
-           </div>
-           
-           {activeTab === 'active' && (
-             <Button asChild size="sm" className="w-full sm:w-auto">
-               <Link href="/products">Добавить объявление</Link>
-             </Button>
-           )}
-         </div>
-
-                             {/* Контейнер для карточек с фиксированной высотой */}
-          <div className="min-h-[400px] sm:min-h-[500px]">
-                         {/* Карточки объявлений */}
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeTab === 'active' 
-                ? activeListings
-                    .filter(listing => !soldListings.has(listing.id))
-                    .map((listing) => (
-                      <ListingCard 
-                        key={listing.id} 
-                        listing={listing} 
-                        onEdit={handleEditListing}
-                        onMarkAsSold={handleMarkAsSold}
-                        isSold={false}
-                      />
-                    ))
-                : activeListings
-                    .filter(listing => soldListings.has(listing.id))
-                    .map((listing) => (
-                      <ListingCard 
-                        key={listing.id} 
-                        listing={listing} 
-                        onEdit={handleEditListing}
-                        onMarkAsSold={handleMarkAsSold}
-                        isSold={true}
-                      />
-                    ))
-              }
+      {/* Статистика */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              {activeListings.filter(listing => !soldListings.has(listing.id)).length}
             </div>
-            
-            {/* Сообщение если нет объявлений на текущей вкладке */}
-            {activeTab === 'active' && activeListings.filter(listing => !soldListings.has(listing.id)).length === 0 && (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <div className="space-y-4">
-                    <div className="text-6xl text-slate-300 dark:text-slate-600">📝</div>
-                    <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">
-                      У вас пока нет активных объявлений
-                    </h3>
-                    <p className="text-slate-600 dark:text-slate-400">
-                      Создайте первое объявление, чтобы начать продавать
-                    </p>
-                    <Button asChild>
-                      <Link href="/products">Создать объявление</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-            
-            {activeTab === 'sold' && activeListings.filter(listing => soldListings.has(listing.id)).length === 0 && (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <div className="space-y-4">
-                    <div className="text-6xl text-slate-300 dark:text-slate-600">✅</div>
-                    <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">
-                      У вас пока нет проданных объявлений
-                    </h3>
-                    <p className="text-slate-600 dark:text-slate-400">
-                      Отмечайте объявления как проданные, чтобы отслеживать свои продажи
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-       </div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">
+              Активных объявлений
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              {soldListings.size}
+            </div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">
+              Продано
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              {activeListings.reduce((sum, listing) => sum + listing.views, 0)}
+            </div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">
+              Просмотров
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              {activeListings.reduce((sum, listing) => sum + listing.price, 0).toLocaleString('ru-RU')} ₽
+            </div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">
+              Общая стоимость
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Модальное окно редактирования */}
+      {/* Вкладки */}
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'active' | 'sold')}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="active">Активные</TabsTrigger>
+          <TabsTrigger value="sold">Продано</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="active" className="space-y-4">
+          {activeListings
+            .filter(listing => !soldListings.has(listing.id))
+            .map((listing) => (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                onEdit={handleEditListing}
+                onMarkAsSold={handleMarkAsSold}
+                isSold={false}
+              />
+            ))}
+        </TabsContent>
+
+        <TabsContent value="sold" className="space-y-4">
+          {activeListings
+            .filter(listing => soldListings.has(listing.id))
+            .map((listing) => (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                onEdit={handleEditListing}
+                onMarkAsSold={handleMarkAsSold}
+                isSold={true}
+              />
+            ))}
+        </TabsContent>
+      </Tabs>
+
+      {/* Модальные окна */}
       <EditListingModal
-        listing={editingListing}
         isOpen={isEditModalOpen}
+        listing={editingListing}
         onClose={handleCloseEditModal}
         onSave={handleSaveListing}
+      />
+
+      <AddListingModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddListing}
       />
     </div>
   );

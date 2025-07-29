@@ -1,12 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
 import { FavoritesButton } from "@/components/FavoritesButton";
-import Link from "next/link";
+import { useFavorites } from "@/lib/contexts/FavoritesContext";
+import { Input } from "@/components/ui/input";
+import { Menu, Plus, User, Heart, MessageCircle, Home, Package, Briefcase, Settings, LogOut } from "lucide-react";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,7 +20,11 @@ export function Header() {
   const [selectedCity, setSelectedCity] = useState("Москва");
   const [selectedLanguage, setSelectedLanguage] = useState("Русский");
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Состояние авторизации
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isFavoritesDialogOpen, setIsFavoritesDialogOpen] = useState(false);
   
+  const { favorites, favoritesCount, removeFromFavorites, clearFavorites } = useFavorites();
+
   const serbianCities = [
     "Белград",
     "Нови Сад", 
@@ -80,6 +90,18 @@ export function Header() {
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     setIsAuthenticated(false);
+    window.location.href = '/';
+  };
+
+  const handleFavoritesClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isAuthenticated) {
+      setIsFavoritesDialogOpen(true);
+      setIsMobileMenuOpen(false);
+    } else {
+      // Показать модальное окно авторизации или перенаправить на страницу входа
+      window.location.href = '/login';
+    }
   };
 
   const getCurrentLanguage = () => {
@@ -107,118 +129,63 @@ export function Header() {
         </div>
       )}
 
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 sm:sticky sm:top-0 z-40">
-        {/* Language Selector - Desktop Only */}
-        <div className="hidden sm:block border-b border-gray-200 dark:border-gray-700">
-          <div className="container mx-auto px-4 py-1">
-            <div className="flex items-center justify-between">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-xs">{selectedCity}</span>
-                    <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  {serbianCities.map((city) => (
-                    <DropdownMenuItem 
-                      key={city}
-                      onClick={() => handleCitySelect(city)}
-                      className={selectedCity === city ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
-                    >
-                      {city}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+      <header className={`sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-200 ${
+        isScrolled ? 'shadow-md' : ''
+      }`}>
+        {/* Верхняя панель с городом и языком */}
+        <div className="bg-slate-50 dark:bg-slate-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="container mx-auto px-4 py-2">
+            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+              <div className="flex items-center space-x-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
+                      <img src="/svg/serbia.svg" alt="Сербия" className="w-3 h-3 mr-1" />
+                      <span className="text-xs">{selectedCity}</span>
+                      <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    {serbianCities.map((city) => (
+                      <DropdownMenuItem 
+                        key={city}
+                        onClick={() => handleCitySelect(city)}
+                        className={selectedCity === city ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
+                      >
+                        {city}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
               
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                    <img src={getCurrentLanguage().flag} alt={getCurrentLanguage().name} className="w-3 h-3 mr-1" />
-                    <span className="text-xs">{selectedLanguage}</span>
-                    <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {languages.map((language) => (
-                    <DropdownMenuItem 
-                      key={language.code}
-                      onClick={() => handleLanguageSelect(language.name)}
-                      className={selectedLanguage === language.name ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
-                    >
-                      <img src={language.flag} alt={language.name} className="w-4 h-4 mr-2" />
-                      <span>{language.name}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-        
-        {/* Mobile Language and City Selector */}
-        <div className="sm:hidden border-b border-gray-200 dark:border-gray-700">
-          <div className="container mx-auto px-4 py-1">
-            <div className="flex items-center justify-between">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-xs">{selectedCity}</span>
-                    <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="max-h-60 overflow-y-auto">
-                  {serbianCities.map((city) => (
-                    <DropdownMenuItem 
-                      key={city}
-                      onClick={() => handleCitySelect(city)}
-                      className={selectedCity === city ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
-                    >
-                      {city}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                    <img src={getCurrentLanguage().flag} alt={getCurrentLanguage().name} className="w-3 h-3 mr-1" />
-                    <span className="text-xs">{selectedLanguage}</span>
-                    <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {languages.map((language) => (
-                    <DropdownMenuItem 
-                      key={language.code}
-                      onClick={() => handleLanguageSelect(language.name)}
-                      className={selectedLanguage === language.name ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
-                    >
-                      <img src={language.flag} alt={language.name} className="w-4 h-4 mr-2" />
-                      <span>{language.name}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center space-x-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
+                      <img src={getCurrentLanguage().flag} alt={getCurrentLanguage().name} className="w-3 h-3 mr-1" />
+                      <span className="text-xs">{selectedLanguage}</span>
+                      <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {languages.map((language) => (
+                      <DropdownMenuItem 
+                        key={language.code}
+                        onClick={() => handleLanguageSelect(language.name)}
+                        className={selectedLanguage === language.name ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
+                      >
+                        <img src={language.flag} alt={language.name} className="w-4 h-4 mr-2" />
+                        <span>{language.name}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
         </div>
@@ -267,6 +234,16 @@ export function Header() {
             
             <div className="hidden sm:flex items-center space-x-4">
               <FavoritesButton />
+              
+              {isAuthenticated && (
+                <Button asChild variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">
+                  <Link href="/add-listing">
+                    <Plus className="h-4 w-4 mr-2" />
+                    <span className="hidden lg:inline">Добавить объявление</span>
+                    <span className="lg:hidden">Добавить</span>
+                  </Link>
+                </Button>
+              )}
               
               <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/20 relative">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -325,9 +302,243 @@ export function Header() {
                 </div>
               )}
             </div>
+
+            {/* Мобильное меню */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="sm:hidden">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80">
+                <SheetHeader>
+                  <SheetTitle className="text-left">Меню</SheetTitle>
+                </SheetHeader>
+                
+                <div className="mt-6 space-y-4">
+                  {/* Основные пункты меню */}
+                  <div className="space-y-2">
+                    <Link href="/" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                      <Home className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                      <span className="text-slate-900 dark:text-slate-100">Главная</span>
+                    </Link>
+                    
+                    <Link href="/products" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                      <Package className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                      <span className="text-slate-900 dark:text-slate-100">Товары</span>
+                    </Link>
+                    
+                    <Link href="/services" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                      <Briefcase className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                      <span className="text-slate-900 dark:text-slate-100">Услуги</span>
+                    </Link>
+                  </div>
+
+                  {/* Кнопка добавления объявления */}
+                  {isAuthenticated && (
+                    <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                      <Link href="/add-listing" className="flex items-center space-x-3 p-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white">
+                        <Plus className="h-5 w-5" />
+                        <span>Добавить объявление</span>
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* Пользовательские функции */}
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                    <button 
+                      onClick={handleFavoritesClick}
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 w-full text-left"
+                    >
+                      <Heart className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                      <span className="text-slate-900 dark:text-slate-100">Избранное</span>
+                      {favoritesCount > 0 && (
+                        <Badge variant="destructive" className="ml-auto">
+                          {favoritesCount}
+                        </Badge>
+                      )}
+                    </button>
+                    
+                    <Link href="/messages" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                      <MessageCircle className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                      <span className="text-slate-900 dark:text-slate-100">Сообщения</span>
+                      <Badge variant="destructive" className="ml-auto">3</Badge>
+                    </Link>
+                  </div>
+
+                  {/* Профиль и авторизация */}
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                    {isAuthenticated ? (
+                      <>
+                        <Link href="/profile" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                          <User className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                          <span className="text-slate-900 dark:text-slate-100">Профиль</span>
+                        </Link>
+                        
+                        <Link href="/settings" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                          <Settings className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                          <span className="text-slate-900 dark:text-slate-100">Настройки</span>
+                        </Link>
+                        
+                        <button 
+                          onClick={handleLogout}
+                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 w-full text-left"
+                        >
+                          <LogOut className="h-5 w-5 text-red-600 dark:text-red-400" />
+                          <span className="text-red-600 dark:text-red-400">Выйти</span>
+                        </button>
+                      </>
+                    ) : (
+                      <div className="space-y-2">
+                        <Link href="/login" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                          <User className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                          <span className="text-slate-900 dark:text-slate-100">Войти</span>
+                        </Link>
+                        
+                        <Link href="/register" className="flex items-center space-x-3 p-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white">
+                          <User className="h-5 w-5" />
+                          <span>Регистрация</span>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
+
+      {/* Favorites Dialog */}
+      <Dialog open={isFavoritesDialogOpen} onOpenChange={setIsFavoritesDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Heart className="h-5 w-5 text-red-500" />
+              Избранные товары и услуги
+              {favoritesCount > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {favoritesCount}
+                </Badge>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {favoritesCount === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
+              <Heart className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
+              <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                Список избранного пуст
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-4">
+                Добавьте товары и услуги в избранное, чтобы они отображались здесь
+              </p>
+              <Button onClick={() => setIsFavoritesDialogOpen(false)}>
+                Перейти к товарам
+              </Button>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* Кнопка очистки */}
+              <div className="flex justify-end mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearFavorites}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Очистить все
+                </Button>
+              </div>
+
+              {/* Список избранных товаров */}
+              <div className="flex-1 overflow-y-auto space-y-3">
+                {favorites.map((product) => (
+                  <Card key={product.id} className="group hover:shadow-md transition-all duration-200">
+                    <CardContent className="p-4">
+                      <div className="flex gap-4">
+                        {/* Изображение */}
+                        <div className="relative flex-shrink-0">
+                          <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              📦
+                            </div>
+                          </div>
+                          <Badge 
+                            variant="secondary" 
+                            className="absolute -top-1 -right-1 text-xs"
+                          >
+                            {product.condition === 'new' ? 'Новый' : 
+                             product.condition === 'excellent' ? 'Отличное' :
+                             product.condition === 'good' ? 'Хорошее' : 'Удовлетворительное'}
+                          </Badge>
+                        </div>
+
+                        {/* Информация о товаре */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <Link 
+                                href={`/product/${product.id}`}
+                                className="block"
+                                onClick={() => setIsFavoritesDialogOpen(false)}
+                              >
+                                <h3 className="font-medium text-sm text-slate-900 dark:text-slate-100 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400">
+                                  {product.title}
+                                </h3>
+                              </Link>
+                              
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {product.category === 'electronics' ? 'Электроника' :
+                                   product.category === 'clothing' ? 'Одежда' :
+                                   product.category === 'furniture' ? 'Мебель' :
+                                   product.category === 'cars' ? 'Автомобили' :
+                                   product.category === 'real_estate' ? 'Недвижимость' :
+                                   product.category === 'services' ? 'Услуги' :
+                                   product.category === 'kids' ? 'Детские товары' : 'Товары'}
+                                </Badge>
+                              </div>
+
+                              <div className="flex items-center justify-between mt-2">
+                                <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                                  {new Intl.NumberFormat('ru-RU').format(product.price)} ₽
+                                </span>
+                                <div className="flex items-center space-x-1 text-xs text-slate-500 dark:text-slate-400">
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                  </svg>
+                                  <span>{product.views}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Кнопка удаления */}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              onClick={() => removeFromFavorites(product.id)}
+                            >
+                              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

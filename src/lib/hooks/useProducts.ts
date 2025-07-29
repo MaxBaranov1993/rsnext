@@ -1,69 +1,54 @@
-import { useState, useEffect } from 'react';
-import { Product, ProductSeller } from '@/types/product';
+import { useState, useEffect, useCallback } from "react";
+import { api, Product } from "../api";
 
-interface UseProductsReturn {
-  products: (Product & { seller: ProductSeller })[];
-  loading: boolean;
-  error: string | null;
-  hasMore: boolean;
-  loadMore: () => void;
-}
-
-export function useProducts(initialCount: number = 15): UseProductsReturn {
-  const [products, setProducts] = useState<(Product & { seller: ProductSeller })[]>([]);
+export function useProducts(limit: number = 10) {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [visibleCount, setVisibleCount] = useState(initialCount);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+
+  const fetchProducts = useCallback(async (pageNum: number = 1) => {
+    try {
+      setLoading(true);
+      const data = await api.getProducts({
+        page: pageNum,
+        limit: limit,
+        sortBy: 'publishedAt',
+        sortOrder: 'desc'
+      });
+      
+      if (pageNum === 1) {
+        setProducts(data.products);
+      } else {
+        setProducts(prev => [...prev, ...data.products]);
+      }
+      
+      setHasMore(data.pagination.hasNextPage);
+      setPage(pageNum);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка загрузки продуктов');
+    } finally {
+      setLoading(false);
+    }
+  }, [limit]);
+
+  const loadMore = useCallback(() => {
+    if (!loading && hasMore) {
+      fetchProducts(page + 1);
+    }
+  }, [loading, hasMore, page, fetchProducts]);
 
   useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Загружаем продукты и продавцов
-        const [productsResponse, sellersResponse] = await Promise.all([
-          fetch('/data/products.json'),
-          fetch('/data/sellers.json')
-        ]);
-        
-        if (!productsResponse.ok || !sellersResponse.ok) {
-          throw new Error('Не удалось загрузить данные');
-        }
-        
-        const productsData = await productsResponse.json();
-        const sellersData = await sellersResponse.json();
-        
-        // Объединяем продукты с данными продавцов
-        const productsWithSellers = productsData.products.map((product: Product) => {
-          const seller = sellersData.sellers.find((s: ProductSeller) => s.id === product.sellerId);
-          return { ...product, seller };
-        }).filter((product: any) => product.seller);
-        
-        setProducts(productsWithSellers);
-      } catch (err) {
-        console.error('Error loading products:', err);
-        setError('Не удалось загрузить товары');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProducts();
-  }, []);
-
-  const loadMore = () => {
-    setVisibleCount(prev => prev + 15);
-  };
-
-  const visibleProducts = products.slice(0, visibleCount);
-  const hasMore = visibleCount < products.length;
+    fetchProducts(1);
+  }, [fetchProducts]);
 
   return {
-    products: visibleProducts,
+    products,
     loading,
     error,
     hasMore,
-    loadMore
+    loadMore,
+    refetch: () => fetchProducts(1)
   };
 }

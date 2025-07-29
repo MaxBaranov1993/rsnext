@@ -15,7 +15,7 @@ import { truncateProductTitleForBreadcrumbs, truncateText } from "@/lib/utils";
 import Link from "next/link";
 
 interface ProductDetailProps {
-  product: Product & { seller: ProductSeller };
+  product: Product & { seller?: ProductSeller | null };
 }
 
 export function ProductDetail({ product }: ProductDetailProps) {
@@ -299,7 +299,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
                 <MapPin className="h-4 w-4" />
-                <span>{product.seller.location}</span>
+                <span>{product.seller?.location}</span>
               </div>
               <Button variant="outline" size="sm" className="border-gray-200 dark:border-gray-700 w-full sm:w-auto">
                 <Map className="h-4 w-4 mr-2" />
@@ -325,29 +325,29 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <CardContent className="p-4">
                 <div className="flex items-start space-x-3">
                   <Avatar className="h-12 w-12 flex-shrink-0">
-                    <AvatarImage src={product.seller.avatar} alt={product.seller.name} />
-                    <AvatarFallback>{product.seller.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={product.seller?.avatar} alt={product.seller?.name || 'Продавец'} />
+                    <AvatarFallback>{product.seller?.name?.charAt(0) || 'П'}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="font-semibold text-slate-900 dark:text-slate-100 truncate">
-                        {product.seller.name}
+                        {product.seller?.name || 'Неизвестный продавец'}
                       </h3>
-                      {product.seller.verified && (
+                      {product.seller?.verified && (
                         <Shield className="h-4 w-4 text-green-500 flex-shrink-0" />
                       )}
-                      {product.seller.type === "company" && (
+                      {product.seller?.type === "company" && (
                         <Building2 className="h-4 w-4 text-blue-500 flex-shrink-0" />
                       )}
                     </div>
                     <div className="flex items-center space-x-1 mb-1">
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
                       <span className="text-sm text-slate-600 dark:text-slate-400">
-                        {product.seller.rating} ({product.seller.totalSales} продаж)
+                        {product.seller?.rating || 'Н/Д'} ({product.seller?.totalSales || 0} продаж)
                       </span>
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400">
-                      На сайте с {formatMemberSince(product.seller.memberSince)} • {product.seller.responseTime}
+                      {product.seller?.memberSince ? `На сайте с ${formatMemberSince(product.seller.memberSince)}` : 'Информация недоступна'} • {product.seller?.responseTime || 'Время ответа не указано'}
                     </div>
                   </div>
                   <Button variant="outline" size="sm" className="flex-shrink-0">

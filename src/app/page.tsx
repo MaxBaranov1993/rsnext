@@ -14,6 +14,11 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { AddListingModal } from "@/components/AddListingModal";
+import { FavoritesModal } from "@/components/FavoritesModal";
+import { ProductCategory } from "@/types/product";
+import { ProductCondition } from "@/types/product";
+import { useFavorites } from "@/lib/contexts/FavoritesContext";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -22,8 +27,11 @@ export default function Home() {
   const [selectedLanguage, setSelectedLanguage] = useState("Русский");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showAddListingModal, setShowAddListingModal] = useState(false);
+  const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   
   const { products, loading, error, hasMore, loadMore } = useProducts(15);
+  const { favorites, favoritesCount, removeFromFavorites, clearFavorites } = useFavorites();
   const router = useRouter();
 
   const serbianCities = [
@@ -161,6 +169,28 @@ export default function Home() {
     setShowAuthModal(false);
   };
 
+  const handleAddListingClick = () => {
+    if (isAuthenticated) {
+      setShowAddListingModal(true);
+    } else {
+      setShowAuthModal(true);
+    }
+  };
+
+  const handleAddListingSubmit = (data: any) => {
+    console.log("Новое объявление:", data);
+    setShowAddListingModal(false);
+    // Здесь будет логика сохранения объявления
+  };
+
+  const handleFavoritesClick = () => {
+    if (isAuthenticated) {
+      setShowFavoritesModal(true);
+    } else {
+      setShowAuthModal(true);
+    }
+  };
+
   const getCurrentLanguage = () => {
     return languages.find(lang => lang.name === selectedLanguage) || languages[2]; // По умолчанию русский
   };
@@ -289,22 +319,32 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {products.map((product, index) => (
+            {products.map((product) => (
               <Suspense key={product.id} fallback={
-                <Card className="overflow-hidden">
+                <Card className="border-0 bg-white dark:bg-slate-900 overflow-hidden">
                   <CardContent className="p-0">
-                    <div className="flex">
-                      <div className="flex-1 p-4">
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2 animate-pulse"></div>
-                        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse"></div>
+                    <div className="aspect-square bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                    <div className="p-3 space-y-2">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                      <div className="flex items-center justify-between">
+                        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-20"></div>
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-12"></div>
                       </div>
-                      <div className="w-32 h-32 sm:w-40 sm:h-40 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
                     </div>
                   </CardContent>
                 </Card>
               }>
-                <ProductCard product={product} />
+                <ProductCard product={{ 
+                  ...product, 
+                  id: product.id.toString(),
+                  sellerId: product.id.toString(),
+                  publishedAt: product.createdAt,
+                  category: product.category as ProductCategory,
+                  condition: product.condition as ProductCondition,
+                  seller: null 
+                }} />
               </Suspense>
             ))}
           </div>
@@ -357,16 +397,24 @@ export default function Home() {
             </svg>
           </button>
           
-          <button className="flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 relative">
+          <button 
+            className="flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 relative"
+            onClick={handleFavoritesClick}
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
-            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              5
-            </div>
+            {favoritesCount > 0 && (
+              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {favoritesCount}
+              </div>
+            )}
           </button>
           
-          <button className="flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
+          <button 
+            className="flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+            onClick={handleAddListingClick}
+          >
             <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -420,6 +468,148 @@ export default function Home() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Listing Modal */}
+      <AddListingModal 
+        isOpen={showAddListingModal} 
+        onClose={() => setShowAddListingModal(false)} 
+        onSubmit={handleAddListingSubmit}
+      />
+
+      {/* Favorites Modal */}
+      <Dialog open={showFavoritesModal} onOpenChange={setShowFavoritesModal}>
+        <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              Избранные товары и услуги
+              {favoritesCount > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {favoritesCount}
+                </Badge>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {favoritesCount === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
+              <svg className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                Список избранного пуст
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-4">
+                Добавьте товары и услуги в избранное, чтобы они отображались здесь
+              </p>
+              <Button onClick={() => setShowFavoritesModal(false)}>
+                Перейти к товарам
+              </Button>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* Кнопка очистки */}
+              <div className="flex justify-end mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearFavorites}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Очистить все
+                </Button>
+              </div>
+
+              {/* Список избранных товаров */}
+              <div className="flex-1 overflow-y-auto space-y-3">
+                {favorites.map((product) => (
+                  <Card key={product.id} className="group hover:shadow-md transition-all duration-200">
+                    <CardContent className="p-4">
+                      <div className="flex gap-4">
+                        {/* Изображение */}
+                        <div className="relative flex-shrink-0">
+                          <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              📦
+                            </div>
+                          </div>
+                          <Badge 
+                            variant="secondary" 
+                            className="absolute -top-1 -right-1 text-xs"
+                          >
+                            {product.condition === 'new' ? 'Новый' : 
+                             product.condition === 'excellent' ? 'Отличное' :
+                             product.condition === 'good' ? 'Хорошее' : 'Удовлетворительное'}
+                          </Badge>
+                        </div>
+
+                        {/* Информация о товаре */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <Link 
+                                href={`/product/${product.id}`}
+                                className="block"
+                                onClick={() => setShowFavoritesModal(false)}
+                              >
+                                <h3 className="font-medium text-sm text-slate-900 dark:text-slate-100 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400">
+                                  {product.title}
+                                </h3>
+                              </Link>
+                              
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {product.category === 'electronics' ? 'Электроника' :
+                                   product.category === 'clothing' ? 'Одежда' :
+                                   product.category === 'furniture' ? 'Мебель' :
+                                   product.category === 'cars' ? 'Автомобили' :
+                                   product.category === 'real_estate' ? 'Недвижимость' :
+                                   product.category === 'services' ? 'Услуги' :
+                                   product.category === 'kids' ? 'Детские товары' : 'Товары'}
+                                </Badge>
+                              </div>
+
+                              <div className="flex items-center justify-between mt-2">
+                                <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                                  {new Intl.NumberFormat('ru-RU').format(product.price)} ₽
+                                </span>
+                                <div className="flex items-center space-x-1 text-xs text-slate-500 dark:text-slate-400">
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                  </svg>
+                                  <span>{product.views}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Кнопка удаления */}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              onClick={() => removeFromFavorites(product.id)}
+                            >
+                              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

@@ -1,0 +1,190 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "title": "iPhone 13 Pro",
+      "description": "Новый iPhone с отличной камерой и производительностью",
+      "price": 999,
+      "category": "electronics",
+      "images": [
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
+        "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400"
+      ],
+      "seller": {
+        "id": 1,
+        "name": "Александар Петровић",
+        "rating": 4.7,
+        "verified": true
+      },
+      "location": "Белград",
+      "condition": "new",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "views": 156,
+      "favorites": 23
+    },
+    {
+      "id": 2,
+      "title": "MacBook Air M2",
+      "description": "Мощный ноутбук с чипом M2 для работы и творчества",
+      "price": 1299,
+      "category": "electronics",
+      "images": [
+        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
+        "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400"
+      ],
+      "seller": {
+        "id": 2,
+        "name": "Мария Иванова",
+        "rating": 4.9,
+        "verified": true
+      },
+      "location": "Нови Сад",
+      "condition": "like_new",
+      "createdAt": "2024-01-14T15:45:00Z",
+      "views": 89,
+      "favorites": 12
+    },
+    {
+      "id": 3,
+      "title": "Toyota Camry 2022",
+      "description": "Надежный седан в отличном состоянии, полная комплектация",
+      "price": 25000,
+      "category": "cars",
+      "images": [
+        "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400",
+        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400"
+      ],
+      "seller": {
+        "id": 3,
+        "name": "Петар Стојановић",
+        "rating": 4.5,
+        "verified": true
+      },
+      "location": "Ниш",
+      "condition": "used",
+      "createdAt": "2024-01-13T09:20:00Z",
+      "views": 234,
+      "favorites": 45
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Александар Петровић",
+      "email": "alexandar@example.com",
+      "phone": "+381 60 123-45-67",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.7,
+      "memberSince": "2022-03-15T00:00:00Z",
+      "totalSales": 23,
+      "responseTime": "В течение 2 часов",
+      "type": "individual",
+      "location": "Београд",
+      "verified": true,
+      "description": "Продаю качественные товары. Всегда на связи, быстро отвечаю на сообщения."
+    },
+    {
+      "id": 2,
+      "name": "Мария Иванова",
+      "email": "maria@example.com",
+      "phone": "+381 60 987-65-43",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face",
+      "rating": 4.9,
+      "memberSince": "2021-11-20T00:00:00Z",
+      "totalSales": 45,
+      "responseTime": "В течение 1 часа",
+      "type": "individual",
+      "location": "Нови Сад",
+      "verified": true,
+      "description": "Продаю только проверенные товары. Быстрая доставка."
+    }
+  ],
+  "categories": [
+    {
+      "id": "cars",
+      "name": "Авто",
+      "icon": "/svg/categoryCar.svg",
+      "color": "bg-green-100"
+    },
+    {
+      "id": "real_estate",
+      "name": "Недвижимость",
+      "icon": "/svg/categoryEstate.svg",
+      "color": "bg-blue-100"
+    },
+    {
+      "id": "electronics",
+      "name": "Электроника",
+      "icon": "/svg/categoryComputer.svg",
+      "color": "bg-purple-100"
+    },
+    {
+      "id": "clothing",
+      "name": "Одежда",
+      "icon": "/svg/categoryClothes.svg",
+      "color": "bg-pink-100"
+    },
+    {
+      "id": "furniture",
+      "name": "Мебель",
+      "icon": "/svg/categoryFurniture.svg",
+      "color": "bg-orange-100"
+    },
+    {
+      "id": "services",
+      "name": "Услуги",
+      "icon": "/svg/categoryServices.svg",
+      "color": "bg-yellow-100"
+    },
+    {
+      "id": "kids",
+      "name": "Детям",
+      "icon": "/svg/categorykids.svg",
+      "color": "bg-indigo-100"
+    },
+    {
+      "id": "goods",
+      "name": "Товары",
+      "icon": "/svg/categoryGoods.svg",
+      "color": "bg-red-100"
+    }
+  ],
+  "favorites": [
+    {
+      "id": 1,
+      "userId": 1,
+      "productId": 2
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "productId": 3
+    }
+  ],
+  "listings": [
+    {
+      "id": 1,
+      "userId": 1,
+      "productId": 1,
+      "status": "active",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "productId": 2,
+      "status": "active",
+      "createdAt": "2024-01-14T15:45:00Z",
+      "updatedAt": "2024-01-14T15:45:00Z"
+    },
+    {
+      "id": 3,
+      "userId": 3,
+      "productId": 3,
+      "status": "sold",
+      "createdAt": "2024-01-13T09:20:00Z",
+      "updatedAt": "2024-01-16T14:30:00Z"
+    }
+  ]
+} 

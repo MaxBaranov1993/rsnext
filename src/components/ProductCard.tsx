@@ -13,7 +13,7 @@ import Link from "next/link";
 import { truncateProductTitleForCard } from "@/lib/utils";
 
 interface ProductCardProps {
-  product: Product & { seller: ProductSeller };
+  product: Product & { seller?: ProductSeller | null };
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -135,22 +135,22 @@ function ProductCardContent({ product }: ProductCardProps) {
             {/* Seller Info */}
             <div className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
               <User className="w-3 h-3" />
-              <span className="truncate">{product.seller.name}</span>
-              {product.seller.verified && (
+              <span className="truncate">{product.seller?.name || 'Неизвестный продавец'}</span>
+              {product.seller?.verified && (
                 <Badge variant="outline" className="text-xs px-1 py-0 h-4">
                   ✓
                 </Badge>
               )}
               <div className="flex items-center space-x-1">
                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                <span>{product.seller.rating}</span>
+                <span>{product.seller?.rating || 'Н/Д'}</span>
               </div>
             </div>
             
             {/* Location */}
             <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center">
               <MapPin className="w-3 h-3 mr-1" />
-              <span className="truncate">{product.seller.location}</span>
+              <span className="truncate">{product.seller?.location || 'Местоположение не указано'}</span>
             </p>
             
             {/* Price */}

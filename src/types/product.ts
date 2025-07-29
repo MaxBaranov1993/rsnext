@@ -43,6 +43,7 @@ export interface Product {
   views: number;
   publishedAt: string;
   description?: string;
+  seller?: ProductSeller | null;
 }
 
 export interface ProductCardProps {
