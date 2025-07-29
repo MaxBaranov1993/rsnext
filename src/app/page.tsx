@@ -3,11 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { ProductCard } from "@/components/ProductCard";
+import { Carousel, CarouselItem } from "@/components/ui/carousel";
+import { useState, useEffect, Suspense } from "react";
+import { Product } from "@/types/product";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,6 +45,58 @@ export default function Home() {
     { name: "Русский", flag: "/svg/russia.svg", code: "ru" }
   ];
 
+  // Категории товаров
+  const categories = [
+    {
+      id: "auto",
+      name: "Авто",
+      icon: "/svg/categoryCar.svg",
+      color: "bg-green-100"
+    },
+    {
+      id: "real-estate",
+      name: "Недвижимость",
+      icon: "/svg/categoryEstate.svg",
+      color: "bg-blue-100"
+    },
+    {
+      id: "electronics",
+      name: "Электроника",
+      icon: "/svg/categoryComputer.svg",
+      color: "bg-purple-100"
+    },
+    {
+      id: "clothing",
+      name: "Одежда",
+      icon: "/svg/categoryClothes.svg",
+      color: "bg-pink-100"
+    },
+    {
+      id: "furniture",
+      name: "Мебель",
+      icon: "/svg/categoryFurniture.svg",
+      color: "bg-orange-100"
+    },
+    {
+      id: "services",
+      name: "Услуги",
+      icon: "/svg/categoryServices.svg",
+      color: "bg-yellow-100"
+    },
+    {
+      id: "kids",
+      name: "Детям",
+      icon: "/svg/categorykids.svg",
+      color: "bg-indigo-100"
+    },
+    {
+      id: "goods",
+      name: "Товары",
+      icon: "/svg/categoryGoods.svg",
+      color: "bg-red-100"
+    }
+  ];
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -69,6 +122,17 @@ export default function Home() {
   const getCurrentLanguage = () => {
     return languages.find(lang => lang.name === selectedLanguage) || languages[2]; // По умолчанию русский
   };
+
+  // Функция для группировки категорий по 4 для карусели
+  const chunkCategories = (arr: typeof categories, size: number) => {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+  };
+
+  const categoryChunks = chunkCategories(categories, 4);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -269,150 +333,89 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-12 sm:py-20">
+      {/* Categories Section */}
+      <section className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700">
+        <div className="container mx-auto px-4 py-4">
+          {/* Desktop Grid - только для больших экранов */}
+          <div className="hidden lg:grid lg:grid-cols-8 gap-3">
+            {categories.map((category) => (
+              <Card
+                key={category.id}
+                className="group cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105 border-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-700 dark:hover:to-slate-800 h-16 overflow-hidden"
+              >
+                <CardContent className="p-3 h-full flex items-center justify-center">
+                  <div className="flex items-center space-x-3 w-full">
+                    <div className={`w-8 h-8 ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm flex-shrink-0`}>
+                      <img 
+                        src={category.icon} 
+                        alt={category.name}
+                        className="w-5 h-5 object-contain group-hover:drop-shadow-md transition-all duration-200"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors duration-200 truncate block">
+                        {category.name}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Tablet and Mobile Carousel */}
+          <div className="lg:hidden">
+            <Carousel 
+              showArrows={false} 
+              showIndicators={false}
+              enableSwipe={true}
+            >
+              {categoryChunks.map((chunk, chunkIndex) => (
+                <CarouselItem key={chunkIndex}>
+                  <div className="grid grid-cols-4 gap-3">
+                    {chunk.map((category) => (
+                      <Card
+                        key={category.id}
+                        className="group cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105 border-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-700 dark:hover:to-slate-800 h-20"
+                      >
+                        <CardContent className="p-2 h-full flex flex-col items-center justify-center">
+                          <div className="flex flex-col items-center space-y-1">
+                            <div className={`w-10 h-10 ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm`}>
+                              <img 
+                                src={category.icon} 
+                                alt={category.name}
+                                className="w-6 h-6 object-contain group-hover:drop-shadow-md transition-all duration-200"
+                              />
+                            </div>
+                            <div className="text-center">
+                              <span className="text-[10px] font-medium text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors duration-200 leading-tight">
+                                {category.name}
+                              </span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CarouselItem>
+              ))}
+            </Carousel>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <Badge variant="secondary" className="mb-4">
-            Платформа для умных продаж
-          </Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-6">
-            Автоматизируйте ваши
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {" "}продажи
-            </span>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            Добро пожаловать в rSALE
           </h1>
-          <p className="mx-auto max-w-2xl sm:max-w-3xl text-base sm:text-lg text-slate-600 dark:text-slate-400 mb-8">
-            Современная платформа для автоматизации продаж, которая помогает 
-            компаниям расти и развиваться с помощью аналитики и умных инструментов.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white">
-              Начать бесплатно
-            </Button>
-            <Button variant="outline" size="lg">
-              Узнать больше
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-12 sm:py-20">
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            Почему выбирают rSALE
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Наша платформа объединяет лучшие практики и современные технологии
+          <p className="text-slate-600 dark:text-slate-400">
+            Главная страница очищена от всех секций
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <CardTitle className="text-lg sm:text-xl">Аналитика</CardTitle>
-              <CardDescription>
-                Подробная аналитика продаж в реальном времени
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
-                Отслеживайте ключевые метрики, анализируйте тренды и принимайте 
-                обоснованные решения на основе данных.
-              </p>
-            </CardContent>
-          </Card>
+      </main>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <CardTitle className="text-lg sm:text-xl">Автоматизация</CardTitle>
-              <CardDescription>
-                Автоматизируйте рутинные процессы
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
-                Настройте автоматические сценарии для обработки лидов, 
-                отправки уведомлений и генерации отчетов.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow md:col-span-2 lg:col-span-1">
-            <CardHeader>
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              </div>
-              <CardTitle className="text-lg sm:text-xl">Рост доходов</CardTitle>
-              <CardDescription>
-                Увеличьте продажи и доходы
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
-                Используйте умные инструменты для увеличения конверсии 
-                и максимизации прибыли вашего бизнеса.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 mt-20">
-        <div className="container mx-auto px-4 py-8 sm:py-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">rSALE</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm">
-                Современная платформа для автоматизации продаж
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Продукт</h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">Функции</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">Цены</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">Интеграции</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Поддержка</h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">Документация</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">Контакты</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Компания</h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">О нас</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">Блог</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100">Карьера</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center">
-            <p className="text-slate-600 dark:text-slate-400 text-sm">
-              © 2024 rSALE. Все права защищены.
-            </p>
-          </div>
-        </div>
-      </footer>
-      
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 z-50">
         <div className="flex items-center justify-around py-3">
