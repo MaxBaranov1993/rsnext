@@ -46,14 +46,7 @@ export function LoginForm() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Логотип */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center mb-4">
-            <img src="/svg/arrowlogo.svg" alt="rSALE" className="h-16 w-16" />
-          </div>
-          <p className="text-slate-600 dark:text-slate-400">
-            Войдите в свой аккаунт
-          </p>
-        </div>
+      
 
         <Card className="shadow-xl border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
           <CardHeader className="space-y-1">

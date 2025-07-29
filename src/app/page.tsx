@@ -12,14 +12,19 @@ import { Product } from "@/types/product";
 import { useProducts } from "@/lib/hooks/useProducts";
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [selectedCity, setSelectedCity] = useState("Москва");
   const [selectedLanguage, setSelectedLanguage] = useState("Русский");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   const { products, loading, error, hasMore, loadMore } = useProducts(15);
+  const router = useRouter();
 
   const serbianCities = [
     "Белград",
@@ -102,6 +107,16 @@ export default function Home() {
     }
   ];
 
+  // Проверяем авторизацию при загрузке
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuthenticated(!!token);
+    };
+    
+    checkAuth();
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -126,6 +141,24 @@ export default function Home() {
 
   const handleLoadMore = () => {
     loadMore(); // Используем функцию loadMore из хука
+  };
+
+  const handleProfileClick = () => {
+    if (isAuthenticated) {
+      router.push('/profile');
+    } else {
+      setShowAuthModal(true);
+    }
+  };
+
+  const handleLogin = () => {
+    router.push('/login');
+    setShowAuthModal(false);
+  };
+
+  const handleRegister = () => {
+    router.push('/register');
+    setShowAuthModal(false);
   };
 
   const getCurrentLanguage = () => {
@@ -350,13 +383,45 @@ export default function Home() {
             </div>
           </button>
           
-          <button className="flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
+          <button 
+            className="flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+            onClick={handleProfileClick}
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </button>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Войти в аккаунт</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-center text-gray-600 dark:text-gray-400">
+              Для доступа к профилю необходимо войти в аккаунт
+            </p>
+            <div className="flex flex-col space-y-3">
+              <Button 
+                onClick={handleLogin}
+                className="w-full bg-purple-600 hover:bg-purple-700"
+              >
+                Войти
+              </Button>
+              <Button 
+                onClick={handleRegister}
+                variant="outline"
+                className="w-full"
+              >
+                Регистрация
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

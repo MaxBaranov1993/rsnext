@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ActiveListings } from "@/components/profile/ActiveListings";
 import { 
   User, 
   Mail, 
@@ -27,9 +28,11 @@ import {
   Package,
   Lock,
   Eye,
-  EyeOff
+  EyeOff,
+  LogOut
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ProfileData {
   id: string;
@@ -60,6 +63,7 @@ export function ProfileForm() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
   const [profileData, setProfileData] = useState<ProfileData>({
     id: "1",
     name: "Александар Петровић",
@@ -158,6 +162,13 @@ export function ProfileForm() {
     }, 1000);
   };
 
+  const handleLogout = () => {
+    // Удаляем токен авторизации
+    localStorage.removeItem('authToken');
+    // Перенаправляем на главную страницу
+    router.push('/');
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ru-RU', {
       year: 'numeric',
@@ -171,27 +182,28 @@ export function ProfileForm() {
       {/* Header */}
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">
               <ArrowLeft className="h-5 w-5" />
               <span>Назад</span>
             </Link>
             <div className="flex items-center space-x-2">
               <img src="/svg/arrowlogo.svg" alt="rSALE" className="h-6 w-6" />
-              <span className="text-xl font-bold text-slate-900 dark:text-slate-100">Личный кабинет</span>
+              <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">Личный кабинет</span>
             </div>
+            <div className="w-10"></div> {/* Spacer for centering */}
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="profile">Профиль</TabsTrigger>
-              <TabsTrigger value="company">Компания</TabsTrigger>
-              <TabsTrigger value="activity">Активность</TabsTrigger>
-              <TabsTrigger value="settings">Настройки</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1">
+              <TabsTrigger value="profile" className="text-xs sm:text-sm">Профиль</TabsTrigger>
+              <TabsTrigger value="company" className="text-xs sm:text-sm">Компания</TabsTrigger>
+              <TabsTrigger value="activity" className="text-xs sm:text-sm">Активность</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs sm:text-sm">Настройки</TabsTrigger>
             </TabsList>
 
             {/* Профиль */}
@@ -209,20 +221,22 @@ export function ProfileForm() {
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Аватар и основная информация */}
-                    <div className="flex items-start space-x-6">
-                      <div className="space-y-4">
-                        <Avatar className="h-24 w-24">
-                          <AvatarImage src={profileData.avatar} alt={profileData.name} />
-                          <AvatarFallback className="text-lg">{profileData.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <Button variant="outline" size="sm" className="w-full">
+                    <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                      <div className="space-y-4 w-full sm:w-auto">
+                        <div className="flex justify-center sm:justify-start">
+                          <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
+                            <AvatarImage src={profileData.avatar} alt={profileData.name} />
+                            <AvatarFallback className="text-lg">{profileData.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
                           <Camera className="h-4 w-4 mr-2" />
                           Изменить фото
                         </Button>
                       </div>
 
-                      <div className="flex-1 space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex-1 space-y-4 w-full">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="name">Имя и фамилия</Label>
                             <div className="relative">
@@ -301,8 +315,8 @@ export function ProfileForm() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-                      <div className="flex items-center space-x-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4 sm:space-y-0">
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                         <div className="flex items-center space-x-2">
                           <Star className="h-4 w-4 text-yellow-500 fill-current" />
                           <span className="text-sm font-medium">{profileData.rating}</span>
@@ -323,7 +337,7 @@ export function ProfileForm() {
                         )}
                       </div>
 
-                      <Button type="submit" disabled={saving}>
+                      <Button type="submit" disabled={saving} className="w-full sm:w-auto">
                         {saving ? (
                           <div className="flex items-center space-x-2">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -338,6 +352,29 @@ export function ProfileForm() {
                       </Button>
                     </div>
                   </form>
+                </CardContent>
+              </Card>
+
+              {/* Кнопка выхода */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-red-600 dark:text-red-400">
+                    <LogOut className="h-5 w-5" />
+                    <span>Выход из аккаунта</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Выйти из личного кабинета и вернуться на главную страницу
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button 
+                    onClick={handleLogout}
+                    variant="destructive"
+                    className="w-full sm:w-auto"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Выйти из аккаунта
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -369,7 +406,7 @@ export function ProfileForm() {
 
                     {profileData.type === "company" && (
                       <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="legalName">Юридическое название</Label>
                             <Input
@@ -429,33 +466,7 @@ export function ProfileForm() {
 
             {/* Активность */}
             <TabsContent value="activity" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <MessageSquare className="h-5 w-5" />
-                    <span>Активность</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Ваша активность на платформе
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{profileData.totalSales}</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Продаж</div>
-                    </div>
-                    <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{profileData.rating}</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Рейтинг</div>
-                    </div>
-                    <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">2</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Активных объявлений</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ActiveListings sellerName={profileData.name} />
             </TabsContent>
 
             {/* Настройки */}
@@ -587,7 +598,7 @@ export function ProfileForm() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleAddressSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="street">Улица и номер дома</Label>
                         <Input
