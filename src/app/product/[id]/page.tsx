@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { ProductDetail } from '@/components/ProductDetail';
 import { getProductWithSeller, getAllProductIds, truncateText } from '@/lib/utils';
+import { ProductPageClient } from './ProductPageClient';
 
 interface ProductPageProps {
   params: {
@@ -18,7 +19,8 @@ export async function generateStaticParams() {
 
 // Получаем данные товара
 export async function generateMetadata({ params }: ProductPageProps) {
-  const productWithSeller = await getProductWithSeller(params.id);
+  const { id } = await params;
+  const productWithSeller = await getProductWithSeller(id);
   
   if (!productWithSeller) {
     return {
@@ -47,11 +49,12 @@ export async function generateMetadata({ params }: ProductPageProps) {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const productWithSeller = await getProductWithSeller(params.id);
+  const { id } = await params;
+  const productWithSeller = await getProductWithSeller(id);
 
   if (!productWithSeller) {
     notFound();
   }
 
-  return <ProductDetail product={productWithSeller} />;
+  return <ProductPageClient product={productWithSeller} />;
 }

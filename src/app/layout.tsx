@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { FavoritesProvider } from "@/lib/contexts/FavoritesContext";
 import { Toaster } from "@/components/ui/toaster";
+import { Footer } from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function RootLayout({
       >
         <FavoritesProvider>
           {children}
+          <Footer />
           <Toaster />
         </FavoritesProvider>
       </body>

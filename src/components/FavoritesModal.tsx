@@ -132,6 +132,33 @@ export function FavoritesModal({ trigger }: FavoritesModalProps) {
                     </span>
                   </div>
 
+                                     {/* Location and Address */}
+                   <div className="mt-2 space-y-1">
+                     <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                       <div className="flex items-center justify-center w-3 h-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
+                         <MapPin className="w-2 h-2 text-blue-600 dark:text-blue-400" />
+                       </div>
+                       <span className="truncate font-medium">{product.location || 'Местоположение не указано'}</span>
+                     </div>
+                     {product.address && (
+                       <div className="flex items-center gap-1 ml-4">
+                         <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                         <span className="text-xs text-slate-400 dark:text-slate-500 truncate">
+                           {product.street && product.houseNumber ? (
+                             <>
+                               <span className="text-slate-400 dark:text-slate-500">ул. </span>
+                               <span className="text-slate-500 dark:text-slate-400">{product.street}</span>
+                               <span className="text-slate-400 dark:text-slate-500">, </span>
+                               <span className="text-slate-500 dark:text-slate-400">{product.houseNumber}</span>
+                             </>
+                           ) : (
+                             product.address
+                           )}
+                         </span>
+                       </div>
+                     )}
+                   </div>
+
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
                       {formatPrice(product.price)} ₽

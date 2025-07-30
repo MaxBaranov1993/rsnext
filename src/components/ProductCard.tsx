@@ -147,11 +147,34 @@ function ProductCardContent({ product }: ProductCardProps) {
               </div>
             </div>
             
-            {/* Location */}
-            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center">
-              <MapPin className="w-3 h-3 mr-1" />
-              <span className="truncate">{product.seller?.location || 'Местоположение не указано'}</span>
-            </p>
+                        {/* Location */}
+            <div className="space-y-1">
+              <div className="flex items-center space-x-1">
+                <div className="flex items-center justify-center w-3 h-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
+                  <MapPin className="w-2 h-2 text-blue-600 dark:text-blue-400" />
+                </div>
+                <span className="text-xs text-slate-600 dark:text-slate-400 truncate font-medium">
+                  {product.location || product.seller?.location || 'Местоположение не указано'}
+                </span>
+              </div>
+              {product.address && (
+                <div className="flex items-center space-x-1 ml-4">
+                  <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                    {product.street && product.houseNumber ? (
+                      <>
+                        <span className="text-slate-400 dark:text-slate-500">ул. </span>
+                        <span className="text-slate-500 dark:text-slate-400">{product.street}</span>
+                        <span className="text-slate-400 dark:text-slate-500">, </span>
+                        <span className="text-slate-500 dark:text-slate-400">{product.houseNumber}</span>
+                      </>
+                    ) : (
+                      product.address
+                    )}
+                  </span>
+                </div>
+              )}
+            </div>
             
             {/* Price */}
             <div className="flex items-center justify-between">

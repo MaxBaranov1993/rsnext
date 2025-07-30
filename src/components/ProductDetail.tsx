@@ -16,9 +16,10 @@ import Link from "next/link";
 
 interface ProductDetailProps {
   product: Product & { seller?: ProductSeller | null };
+  onMapClick?: () => void;
 }
 
-export function ProductDetail({ product }: ProductDetailProps) {
+export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -175,7 +176,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="bg-slate-50 dark:bg-slate-900">
       {/* Header */}
       <Header />
 
@@ -296,16 +297,59 @@ export function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             {/* Геолокация */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-              <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                <MapPin className="h-4 w-4" />
-                <span>{product.seller?.location}</span>
-              </div>
-              <Button variant="outline" size="sm" className="border-gray-200 dark:border-gray-700 w-full sm:w-auto">
-                <Map className="h-4 w-4 mr-2" />
-                Показать на карте
-              </Button>
-            </div>
+            <Card className="border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30">
+                        <MapPin className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+                          Местоположение
+                        </h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm">
+                          {product.location || product.seller?.location}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Адрес */}
+                    {product.address && (
+                      <div className="ml-10">
+                        <div className="flex items-center space-x-2 text-sm">
+                          <div className="w-1 h-1 rounded-full bg-slate-400 dark:bg-slate-500"></div>
+                          <span className="text-slate-700 dark:text-slate-300 font-medium">
+                            {product.street && product.houseNumber ? (
+                              <>
+                                <span className="text-slate-500 dark:text-slate-400">ул. </span>
+                                <span className="text-slate-700 dark:text-slate-300">{product.street}</span>
+                                <span className="text-slate-500 dark:text-slate-400">, </span>
+                                <span className="text-slate-700 dark:text-slate-300">{product.houseNumber}</span>
+                              </>
+                            ) : (
+                              product.address
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-blue-200 dark:border-blue-700 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex-shrink-0" 
+                    onClick={onMapClick}
+                  >
+                    <Map className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Карта</span>
+                    <span className="sm:hidden">Карта</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Статистика */}
             <div className="flex items-center space-x-4 lg:space-x-6 text-sm text-slate-600 dark:text-slate-400">
@@ -405,7 +449,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
 function ProductDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="bg-slate-50 dark:bg-slate-900">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Скелетон изображений */}

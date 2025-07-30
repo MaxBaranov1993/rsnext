@@ -30,6 +30,9 @@ export interface ProductSeller {
   location: string;
   verified: boolean;
   description: string;
+  address?: string;
+  street?: string;
+  houseNumber?: string;
   companyInfo?: CompanyInfo;
 }
 
@@ -43,6 +46,10 @@ export interface Product {
   views: number;
   publishedAt: string;
   description?: string;
+  location?: string;
+  address?: string;
+  street?: string;
+  houseNumber?: string;
   seller?: ProductSeller | null;
 }
 

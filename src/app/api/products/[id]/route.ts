@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const productId = params.id;
+    const { id: productId } = await params;
     
     // Путь к JSON файлам с данными
     const productsPath = path.join(process.cwd(), 'public', 'data', 'products.json');
@@ -53,7 +53,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     
     // Путь к JSON файлу
@@ -98,7 +98,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     // Путь к JSON файлу
     const productsPath = path.join(process.cwd(), 'public', 'data', 'products.json');

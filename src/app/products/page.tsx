@@ -156,7 +156,7 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="bg-slate-50 dark:bg-slate-900">
         <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
@@ -169,7 +169,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="bg-slate-50 dark:bg-slate-900">
       {/* Header */}
       <Header />
 

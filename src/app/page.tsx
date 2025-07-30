@@ -34,7 +34,8 @@ import {
   MessageCircle,
   Settings,
   LogOut,
-  Search
+  Search,
+  Map
 } from "lucide-react";
 
 export default function Home() {
@@ -48,6 +49,7 @@ export default function Home() {
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showMoreProducts, setShowMoreProducts] = useState(false);
   const [showMoreServices, setShowMoreServices] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
   
   const { products, loading, error, hasMore, loadMore } = useProducts(15);
   const { favorites, favoritesCount, removeFromFavorites, clearFavorites } = useFavorites();
@@ -221,6 +223,10 @@ export default function Home() {
     }
   };
 
+  const handleMapClick = () => {
+    setShowMapModal(true);
+  };
+
   const getCurrentLanguage = () => {
     return languages.find(lang => lang.name === selectedLanguage) || languages[2]; // По умолчанию русский
   };
@@ -237,7 +243,7 @@ export default function Home() {
   const categoryChunks = chunkCategories(categories, 4);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Mobile Search Overlay */}
       {showMobileSearch && isScrolled && (
         <div className="md:hidden fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 z-50 p-4">
@@ -698,6 +704,34 @@ export default function Home() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Map Modal */}
+      <Dialog open={showMapModal} onOpenChange={setShowMapModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Map className="h-5 w-5 text-blue-500" />
+              Карта
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 min-h-0">
+            <div className="w-full h-96 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="text-center">
+                  <Map className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Карта загружается...
+                  </p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                    Mapbox API: pk.eyJ1IjoibWFrc2ltMTk5MyIsImEiOiJjbWRxMGgzc3AwMWY3MnNzZngzdzhoYnhmIn0.RAlxNWhEuSKhPR8E2Jy8Rw
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
