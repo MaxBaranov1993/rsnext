@@ -112,7 +112,7 @@ export function Header() {
     <>
       {/* Mobile Search Overlay */}
       {showMobileSearch && isScrolled && (
-        <div className="md:hidden fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 z-50 p-4">
+        <div className="md:hidden md:fixed md:top-0 md:left-0 md:right-0 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 md:z-50 p-4">
           <div className="relative">
             <Input 
               placeholder="Поиск..." 
@@ -129,7 +129,7 @@ export function Header() {
         </div>
       )}
 
-      <header className={`sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-200 ${
+      <header className={`md:sticky md:top-0 z-40 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-200 ${
         isScrolled ? 'shadow-md' : ''
       }`}>
         {/* Верхняя панель с городом и языком */}

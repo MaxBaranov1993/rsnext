@@ -209,6 +209,11 @@ export function ProfileForm() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="profile" className="space-y-6">
+            <style jsx>{`
+              .tabs-content {
+                transition: opacity 0.2s ease-in-out;
+              }
+            `}</style>
             <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1">
               <TabsTrigger value="profile" className="text-xs sm:text-sm">Профиль</TabsTrigger>
               <TabsTrigger value="company" className="text-xs sm:text-sm">Компания</TabsTrigger>
@@ -217,7 +222,7 @@ export function ProfileForm() {
             </TabsList>
 
             {/* Профиль */}
-            <TabsContent value="profile" className="space-y-6">
+            <TabsContent value="profile" className="space-y-6 min-h-[600px]">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
@@ -390,7 +395,7 @@ export function ProfileForm() {
             </TabsContent>
 
             {/* Информация о компании */}
-            <TabsContent value="company" className="space-y-6">
+            <TabsContent value="company" className="space-y-6 min-h-[600px]">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
@@ -475,12 +480,12 @@ export function ProfileForm() {
             </TabsContent>
 
             {/* Активность */}
-            <TabsContent value="activity" className="space-y-6">
+            <TabsContent value="activity" className="space-y-6 min-h-[600px]">
               <ActiveListings sellerName={profileData.name} />
             </TabsContent>
 
             {/* Настройки */}
-            <TabsContent value="settings" className="space-y-6">
+            <TabsContent value="settings" className="space-y-6 min-h-[600px]">
               {/* Смена пароля */}
               <Card>
                 <CardHeader>

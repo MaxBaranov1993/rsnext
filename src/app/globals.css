@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -141,4 +141,20 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+/* Tab content stabilization */
+[data-radix-tab-content] {
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Prevent layout shift in tabs */
+[data-radix-tab-content][data-state="inactive"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-radix-tab-content][data-state="active"] {
+  opacity: 1;
+  pointer-events: auto;
 }

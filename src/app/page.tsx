@@ -46,10 +46,23 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAddListingModal, setShowAddListingModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
+  const [showMoreProducts, setShowMoreProducts] = useState(false);
+  const [showMoreServices, setShowMoreServices] = useState(false);
   
   const { products, loading, error, hasMore, loadMore } = useProducts(15);
   const { favorites, favoritesCount, removeFromFavorites, clearFavorites } = useFavorites();
   const router = useRouter();
+
+  // Фильтрация товаров и услуг
+  const productsItems = products.filter(product => product.category !== 'services');
+  const servicesItems = products.filter(product => product.category === 'services');
+  
+  // Ограничение до 3 рядов (15 товаров на больших экранах, 6 на средних)
+  const maxProductsToShow = 15; // 3 ряда по 5 товаров
+  const maxServicesToShow = 15; // 3 ряда по 5 услуг
+  
+  const displayedProducts = showMoreProducts ? productsItems : productsItems.slice(0, maxProductsToShow);
+  const displayedServices = showMoreServices ? servicesItems : servicesItems.slice(0, maxServicesToShow);
 
   const serbianCities = [
     "Белград",
@@ -278,24 +291,24 @@ export default function Home() {
 
           {/* Tablet and Mobile Carousel */}
           <div className="lg:hidden">
-            <Carousel>
+            <Carousel className="w-full">
               {categoryChunks.map((chunk, chunkIndex) => (
-                <CarouselItem key={chunkIndex}>
-                  <div className="grid grid-cols-4 gap-3">
+                <CarouselItem key={chunkIndex} className="pl-1">
+                  <div className="grid grid-cols-4 gap-4 px-2">
                     {chunk.map((category) => (
                       <Link key={category.id} href={`/products?category=${category.id}`}>
                         <Card
-                          className="group cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105 border-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-700 dark:hover:to-slate-800 h-20"
+                          className="group cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 hover:from-slate-50 hover:to-slate-100 dark:hover:from-slate-700 dark:hover:to-slate-800 h-28 shadow-md hover:shadow-2xl"
                         >
                           <CardContent className="p-2 h-full flex flex-col items-center justify-center">
                             <div className="flex flex-col items-center space-y-1">
-                              <div className={`w-10 h-10 ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm`}>
+                              <div className={`w-10 h-10 ${category.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-xl`}>
                                 <category.icon 
-                                  className="w-6 h-6 text-slate-600 group-hover:text-slate-800 transition-colors duration-200"
+                                  className="w-6 h-6 text-slate-600 group-hover:text-slate-800 transition-colors duration-300"
                                 />
                               </div>
-                              <div className="text-center">
-                                <span className="text-[10px] font-medium text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors duration-200 leading-tight">
+                              <div className="text-center px-1">
+                                <span className="text-[10px] font-medium text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors duration-300 leading-tight break-words">
                                   {category.name}
                                 </span>
                               </div>
@@ -312,16 +325,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Recommendations Section */}
+      {/* Products Section */}
       <section className="bg-slate-50 dark:bg-slate-800 py-8">
         <div className="container mx-auto px-4">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Рекомендации для вас
+                Товары
               </h2>
               <p className="text-slate-600 dark:text-slate-400">
-                Подборка товаров специально для вас
+                Лучшие предложения товаров
               </p>
             </div>
             <Button asChild variant="outline" className="hidden sm:inline-flex">
@@ -331,64 +344,134 @@ export default function Home() {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {products.map((product) => (
-              <Suspense key={product.id} fallback={
-                <Card className="border-0 bg-white dark:bg-slate-900 overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="aspect-square bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
-                    <div className="p-3 space-y-2">
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="flex items-center justify-between">
-                        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-20"></div>
-                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-12"></div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              }>
-                <ProductCard product={product} />
-              </Suspense>
-            ))}
-          </div>
-          
-          {/* Load More Button */}
-          {hasMore && (
-            <div className="mt-8 text-center">
-              <Button 
-                onClick={handleLoadMore}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3"
-                disabled={loading}
-              >
-                {loading ? "Загрузка..." : "Загрузить еще"}
-              </Button>
+          {displayedProducts.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {displayedProducts.map((product) => (
+                  <Suspense key={product.id} fallback={
+                    <Card className="border-0 bg-white dark:bg-slate-900 overflow-hidden">
+                      <CardContent className="p-0">
+                        <div className="aspect-square bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                        <div className="p-3 space-y-2">
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                          <div className="flex items-center justify-between">
+                            <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-20"></div>
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-12"></div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  }>
+                    <ProductCard product={product} />
+                  </Suspense>
+                ))}
+              </div>
+              
+              {/* Кнопка "Показать еще" для товаров */}
+              {productsItems.length > maxProductsToShow && (
+                <div className="text-center mt-8">
+                  <Button 
+                    onClick={() => setShowMoreProducts(!showMoreProducts)}
+                    variant="outline"
+                    className="bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-300 dark:border-gray-600"
+                  >
+                    {showMoreProducts ? "Скрыть" : `Показать еще ${productsItems.length - maxProductsToShow} товаров`}
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-slate-500 dark:text-slate-400">Товары загружаются...</p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="bg-white dark:bg-slate-900 py-8">
+        <div className="container mx-auto px-4">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                Услуги
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400">
+                Профессиональные услуги от проверенных специалистов
+              </p>
+            </div>
+            <Button asChild variant="outline" className="hidden sm:inline-flex">
+              <Link href="/products?category=services">
+                Все услуги
+              </Link>
+            </Button>
+          </div>
           
-          {/* Mobile "Все товары" button */}
-          <div className="mt-6 sm:hidden text-center">
+          {displayedServices.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {displayedServices.map((product) => (
+                  <Suspense key={product.id} fallback={
+                    <Card className="border-0 bg-white dark:bg-slate-900 overflow-hidden">
+                      <CardContent className="p-0">
+                        <div className="aspect-square bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                        <div className="p-3 space-y-2">
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                          <div className="flex items-center justify-between">
+                            <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-20"></div>
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-12"></div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  }>
+                    <ProductCard product={product} />
+                  </Suspense>
+                ))}
+              </div>
+              
+              {/* Кнопка "Показать еще" для услуг */}
+              {servicesItems.length > maxServicesToShow && (
+                <div className="text-center mt-8">
+                  <Button 
+                    onClick={() => setShowMoreServices(!showMoreServices)}
+                    variant="outline"
+                    className="bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-300 dark:border-gray-600"
+                  >
+                    {showMoreServices ? "Скрыть" : `Показать еще ${servicesItems.length - maxServicesToShow} услуг`}
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-slate-500 dark:text-slate-400">Услуги загружаются...</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Mobile Buttons */}
+      <div className="mt-6 sm:hidden">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 gap-4">
             <Button asChild variant="outline" className="w-full">
               <Link href="/products">
                 Все товары
               </Link>
             </Button>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/products?category=services">
+                Все услуги
+              </Link>
+            </Button>
           </div>
         </div>
-      </section>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            Добро пожаловать в rSALE
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Главная страница очищена от всех секций
-          </p>
-        </div>
-      </main>
+      </div>
 
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 z-50">
