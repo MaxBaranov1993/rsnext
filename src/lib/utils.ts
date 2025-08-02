@@ -280,7 +280,25 @@ export function truncateText(text: string, maxLength: number): string {
  * @returns обрезанное название
  */
 export function truncateProductTitleForBreadcrumbs(title: string): string {
-  return truncateText(title, 40);
+  // Убираем лишние пробелы и приводим к нормальному виду
+  const cleanTitle = title.trim().replace(/\s+/g, ' ');
+  
+  // Если название короткое, возвращаем как есть
+  if (cleanTitle.length <= 35) {
+    return cleanTitle;
+  }
+  
+  // Ищем последний пробел в пределах 35 символов
+  const truncated = cleanTitle.slice(0, 35);
+  const lastSpaceIndex = truncated.lastIndexOf(' ');
+  
+  if (lastSpaceIndex > 25) {
+    // Если есть пробел в подходящем месте, обрезаем по нему
+    return cleanTitle.slice(0, lastSpaceIndex) + '...';
+  } else {
+    // Иначе обрезаем по 35 символов
+    return truncated + '...';
+  }
 }
 
 /**
