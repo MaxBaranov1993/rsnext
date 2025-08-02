@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, Trash2, MapPin, User, Star, ShoppingBag, Wrench } from 'lucide-react';
+import { Heart, Trash2, MapPin, ShoppingBag, Wrench } from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/FavoritesContext';
-import { Product, ProductSeller } from '@/types/product';
+import { Product } from '@/types/product';
 import { useProductImages } from '@/lib/hooks/useProductImages';
 import Link from 'next/link';
+import Image from 'next/image';
 import { truncateProductTitleForCard } from '@/lib/utils';
 
 interface FavoritesModalProps {
@@ -77,8 +78,8 @@ export function FavoritesModal({ trigger }: FavoritesModalProps) {
 
   const FavoriteItem = ({ product }: { product: Product }) => {
     const { images, loading } = useProductImages({
-      productTitle: product.title,
       category: product.category,
+      productId: product.id,
       count: 1
     });
 
@@ -90,9 +91,11 @@ export function FavoritesModal({ trigger }: FavoritesModalProps) {
             <div className="relative flex-shrink-0">
               <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
                 {!loading && images && images.length > 0 ? (
-                  <img
+                  <Image
                     src={images[0]}
                     alt={product.title}
+                    width={80}
+                    height={80}
                     className="w-full h-full object-cover"
                   />
                 ) : (

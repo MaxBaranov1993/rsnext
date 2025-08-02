@@ -17,44 +17,48 @@ export default function TestFavoritesPage() {
       id: "test-1",
       title: "Тестовый товар 1",
       price: 1000,
-      category: "electronics",
-      condition: "new",
+      category: "electronics" as const,
+      condition: "new" as const,
       views: 100,
       publishedAt: "2024-01-01",
       description: "Описание тестового товара 1",
+      sellerId: "seller-1",
       seller: {
         id: "seller-1",
         name: "Тестовый продавец",
-        avatar: "/api/unsplash/avatar",
+        avatar: "https://picsum.photos/100/100",
         location: "Москва",
         rating: 4.5,
         totalSales: 50,
         memberSince: "2023-01-01",
         responseTime: "2 часа",
         verified: true,
-        type: "individual"
+        type: "individual" as const,
+        description: "Описание продавца"
       }
     },
     {
       id: "test-2", 
       title: "Тестовый товар 2",
       price: 2000,
-      category: "clothing",
-      condition: "excellent",
+      category: "clothing" as const,
+      condition: "excellent" as const,
       views: 200,
       publishedAt: "2024-01-02",
       description: "Описание тестового товара 2",
+      sellerId: "seller-2",
       seller: {
         id: "seller-2",
         name: "Другой продавец",
-        avatar: "/api/unsplash/avatar",
+        avatar: "https://picsum.photos/100/100",
         location: "Санкт-Петербург",
         rating: 4.8,
         totalSales: 100,
         memberSince: "2022-06-01",
         responseTime: "1 час",
         verified: true,
-        type: "company"
+        type: "company" as const,
+        description: "Описание продавца"
       }
     }
   ];

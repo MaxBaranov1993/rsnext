@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { ProductCard } from "@/components/ProductCard";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { productsData, ProductData } from "@/data/products";
 import { useProductImages } from "@/lib/hooks/useProductImages";
 import { EditListingModal } from "@/components/profile/EditListingModal";
 import { AddListingModal } from "../AddListingModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Edit, Eye, Trash2, User, Star, MapPin, CheckCircle, XCircle, Package, Plus } from "lucide-react";
+import { Edit, Eye, CheckCircle, XCircle, Package, Plus } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface ActiveListingsProps {
   sellerName: string;
@@ -71,7 +71,7 @@ export function ActiveListings({ sellerName }: ActiveListingsProps) {
     console.log("Объявление отмечено как проданное:", listingId);
   };
 
-  const handleAddListing = (data: any) => {
+  const handleAddListing = (data: { title: string; description: string; price: number; category: string; condition: string; location: string; images: File[]; type: 'product' | 'service' }) => {
     // В реальном приложении здесь был бы API запрос для создания объявления
     console.log("Новое объявление:", data);
     
@@ -81,22 +81,17 @@ export function ActiveListings({ sellerName }: ActiveListingsProps) {
       title: data.title,
       price: data.price,
       category: data.category,
-      condition: data.condition,
+      condition: data.condition as "new" | "excellent" | "good" | "fair",
       views: 0,
       publishedAt: new Date().toISOString(),
       description: data.description,
       seller: {
-        id: "1",
         name: sellerName,
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
         rating: 4.7,
         memberSince: "2022-03-15T00:00:00Z",
         totalSales: 23,
-        responseTime: "В течение 2 часов",
-        type: "individual",
-        location: data.location,
-        verified: true,
-        description: "Продаю качественные товары."
+        responseTime: "В течение 2 часов"
       }
     };
     
@@ -360,8 +355,8 @@ function ListingCard({
   isSold: boolean;
 }) {
   const { images, loading, error } = useProductImages({
-    productTitle: listing.title,
     category: listing.category,
+    productId: listing.id,
     count: 3
   });
 
@@ -418,9 +413,11 @@ function ListingCard({
                   images.map((image, index) => (
                     <CarouselItem key={index}>
                       <div className="w-full h-full overflow-hidden px-1 py-1">
-                        <img
+                        <Image
                           src={image}
                           alt={`${listing.title} - фото ${index + 1}`}
+                          width={200}
+                          height={200}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-md"
                         />
                       </div>

@@ -9,7 +9,7 @@ import { Header } from "@/components/Header";
 export default function AddListingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: { title: string; description: string; price: number; category: string; condition: string; location: string; images: File[]; type: 'product' | 'service' }) => {
     console.log("Новое объявление:", data);
     // Здесь будет логика сохранения объявления
   };

@@ -1,7 +1,7 @@
 // Типы для аналитики
 export interface AnalyticsEvent {
   event: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   timestamp?: number;
 }
 
@@ -86,7 +86,7 @@ class Analytics {
   }
 
   // Отслеживание фильтрации
-  trackFilter(category: string, filters: Record<string, any>) {
+  trackFilter(category: string, filters: Record<string, unknown>) {
     this.track('filter_products', {
       category,
       filters,
@@ -94,7 +94,7 @@ class Analytics {
   }
 
   // Отслеживание ошибок
-  trackError(error: Error, context: Record<string, any> = {}) {
+  trackError(error: Error, context: Record<string, unknown> = {}) {
     this.track('error', {
       message: error.message,
       stack: error.stack,
@@ -103,9 +103,10 @@ class Analytics {
   }
 
   // Основной метод отслеживания
-  private track(event: string, properties: Record<string, any> = {}) {
+  private track(event: string, properties: Record<string, unknown> = {}) {
     if (typeof window === 'undefined') return;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const eventData: AnalyticsEvent = {
       event,
       properties: {
@@ -128,29 +129,34 @@ class Analytics {
 
     // Локальное логирование для разработки
     if (process.env.NODE_ENV === 'development') {
-      console.log('Analytics Event:', eventData);
+      console.log('Analytics Event:', { event, properties });
     }
 
     // Отправка в собственную систему аналитики
-    this.sendToCustomAnalytics(eventData);
+    this.sendToCustomAnalytics({ event, properties });
   }
 
   // Отправка в собственную систему аналитики
-  private async sendToCustomAnalytics(eventData: AnalyticsEvent) {
+  private async sendToCustomAnalytics(_eventData: AnalyticsEvent) {
     try {
       // Здесь можно добавить отправку в собственную систему аналитики
       // await fetch('/api/analytics', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(eventData),
+      //   body: JSON.stringify(_eventData),
       // });
+      
+      // Временно логируем для разработки
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Analytics event:', _eventData);
+      }
     } catch (error) {
       console.error('Failed to send analytics event:', error);
     }
   }
 
   // Установка пользовательских свойств
-  setUserProperties(properties: Record<string, any>) {
+  setUserProperties(properties: Record<string, unknown>) {
     if (typeof window === 'undefined') return;
 
     // Google Analytics
@@ -165,7 +171,7 @@ class Analytics {
   }
 
   // Идентификация пользователя
-  identify(userId: string, properties: Record<string, any> = {}) {
+  identify(userId: string, properties: Record<string, unknown> = {}) {
     if (typeof window === 'undefined') return;
 
     // Google Analytics
@@ -206,12 +212,12 @@ export function useAnalytics() {
 // Расширение типов для глобальных объектов
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    gtag?: (...args: unknown[]) => void;
     mixpanel?: {
-      track: (event: string, properties?: Record<string, any>) => void;
+      track: (event: string, properties?: Record<string, unknown>) => void;
       identify: (userId: string) => void;
       people: {
-        set: (properties: Record<string, any>) => void;
+        set: (properties: Record<string, unknown>) => void;
       };
     };
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,9 +23,6 @@ import {
   Save,
   Camera,
   ArrowLeft,
-  Settings,
-  MessageSquare,
-  Heart,
   Package,
   Lock,
   Eye,
@@ -33,6 +30,7 @@ import {
   LogOut
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 interface ProfileData {
@@ -59,7 +57,6 @@ interface ProfileData {
 }
 
 export function ProfileForm() {
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -105,9 +102,12 @@ export function ProfileForm() {
     setProfileData(prev => ({
       ...prev,
       companyInfo: {
-        ...prev.companyInfo,
-        [field]: value
-      }
+        legalName: field === "legalName" ? value : prev.companyInfo?.legalName ?? "",
+        inn: field === "inn" ? value : prev.companyInfo?.inn ?? "",
+        address: field === "address" ? value : prev.companyInfo?.address ?? "",
+        phone: field === "phone" ? value : prev.companyInfo?.phone ?? "",
+        website: field === "website" ? value : prev.companyInfo?.website ?? "",
+      },
     }));
   };
 
@@ -189,7 +189,7 @@ export function ProfileForm() {
               <span>Назад</span>
             </Link>
             <div className="flex items-center space-x-2">
-              <img src="/svg/arrowlogo.svg" alt="rSALE" className="h-6 w-6" />
+                              <Image src="/svg/arrowlogo.svg" alt="rSALE" width={24} height={24} className="h-6 w-6" />
               <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">Личный кабинет</span>
             </div>
             <div className="w-10"></div> {/* Spacer for centering */}

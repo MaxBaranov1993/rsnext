@@ -10,8 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ProductData } from "@/data/products";
-import { Save, Loader2, Upload, X, Image, Plus } from "lucide-react";
+import { Save, Loader2, Upload, X, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 interface EditListingModalProps {
   listing: ProductData | null;
@@ -358,9 +359,11 @@ export function EditListingModal({ listing, isOpen, onClose, onSave }: EditListi
                       {images.map((image, index) => (
                         <CarouselItem key={image.id}>
                           <div className="relative aspect-square overflow-hidden rounded-lg">
-                            <img
+                            <Image
                               src={image.url}
                               alt={`Изображение ${index + 1}`}
+                              width={400}
+                              height={400}
                               className="w-full h-full object-cover"
                             />
                             <div className="absolute top-2 right-2">
@@ -398,9 +401,11 @@ export function EditListingModal({ listing, isOpen, onClose, onSave }: EditListi
                 <div className="grid grid-cols-5 gap-2">
                   {images.map((image, index) => (
                     <div key={image.id} className="relative group">
-                      <img
+                      <Image
                         src={image.url}
                         alt={`Миниатюра ${index + 1}`}
+                        width={80}
+                        height={80}
                         className="w-full h-20 object-cover rounded border-2 border-transparent group-hover:border-blue-500"
                       />
                       <Button
@@ -427,13 +432,17 @@ export function EditListingModal({ listing, isOpen, onClose, onSave }: EditListi
             <div className="flex items-center space-x-3">
               <div className="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded flex items-center justify-center">
                 {images.length > 0 ? (
-                  <img
+                  <Image
                     src={images[0].url}
                     alt="Превью"
+                    width={64}
+                    height={64}
                     className="w-full h-full object-cover rounded"
                   />
                 ) : (
-                  <Image className="h-6 w-6 text-slate-400" />
+                  <div className="h-6 w-6 text-slate-400 flex items-center justify-center">
+                    <span className="text-2xl">📷</span>
+                  </div>
                 )}
               </div>
               <div className="flex-1">

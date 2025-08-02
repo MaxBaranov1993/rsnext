@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation';
-import { ProductDetail } from '@/components/ProductDetail';
+import { Suspense } from 'react';
 import { getProductWithSeller, getAllProductIds, truncateText } from '@/lib/utils';
 import { ProductPageClient } from './ProductPageClient';
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // Генерируем статические пути для всех товаров
@@ -56,5 +56,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  return <ProductPageClient product={productWithSeller} />;
+  return (
+    <Suspense fallback={
+      <div className="bg-slate-50 dark:bg-slate-900">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-slate-600 dark:text-slate-400">Загрузка товара...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ProductPageClient product={productWithSeller} />
+    </Suspense>
+  );
 }

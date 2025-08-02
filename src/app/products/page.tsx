@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { getAllProductsWithSellers } from '@/lib/utils';
 import { ProductCard } from '@/components/ProductCard';
@@ -10,7 +10,7 @@ import { ProductFilters } from '@/components/ProductFilters';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, X, Filter, Plus } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import Link from 'next/link';
 
 interface FilterState {
@@ -46,11 +46,11 @@ function getCategoryName(categoryId: string): string {
   return categories[categoryId] || "Товары";
 }
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const searchParams = useSearchParams();
-  const [productsWithSellers, setProductsWithSellers] = useState<(Product & { seller: ProductSeller })[]>([]);
+  const [productsWithSellers, setProductsWithSellers] = useState<(Product & { seller: ProductSeller | null })[]>([]);
   const [loading, setLoading] = useState(true);
-  const [maxPrice, setMaxPrice] = useState(1000000);
+
   const selectedCategory = searchParams.get('category');
 
   // Состояние фильтров
@@ -68,12 +68,13 @@ export default function ProductsPage() {
       setLoading(true);
       try {
         const products = await getAllProductsWithSellers();
-        setProductsWithSellers(products);
+        // Фильтруем товары, у которых есть продавец
+        const productsWithValidSellers = products.filter(product => product.seller !== null);
+        setProductsWithSellers(productsWithValidSellers);
         
-        // Вычисляем максимальную цену
-        const prices = products.map(product => product.price);
+        // Вычисляем максимальную цену и обновляем фильтр
+        const prices = productsWithValidSellers.map(product => product.price);
         const max = Math.max(...prices);
-        setMaxPrice(max);
         
         // Обновляем фильтр по цене с правильным максимальным значением
         setFilters(prev => ({
@@ -108,7 +109,7 @@ export default function ProductsPage() {
     // Фильтр по локации
     if (filters.location) {
       filtered = filtered.filter(product => 
-        product.seller.location.includes(filters.location)
+        product.seller && product.seller.location.includes(filters.location)
       );
     }
 
@@ -122,13 +123,13 @@ export default function ProductsPage() {
     // Фильтр по типу продавца
     if (filters.sellerType.length > 0) {
       filtered = filtered.filter(product => 
-        filters.sellerType.includes(product.seller.type)
+        product.seller && filters.sellerType.includes(product.seller.type)
       );
     }
 
     // Фильтр по верификации
     if (filters.verifiedOnly) {
-      filtered = filtered.filter(product => product.seller.verified);
+      filtered = filtered.filter(product => product.seller && product.seller.verified);
     }
 
     // Специфичные фильтры для недвижимости
@@ -195,7 +196,7 @@ export default function ProductsPage() {
                 Найдено {filteredProducts.length} товаров
                 {selectedCategory && (
                   <span className="ml-2">
-                    в категории "{getCategoryName(selectedCategory)}"
+                    в категории &quot;{getCategoryName(selectedCategory)}&quot;
                   </span>
                 )}
               </p>
@@ -261,7 +262,7 @@ export default function ProductsPage() {
                   </h2>
                   <p className="text-slate-600 dark:text-slate-400 mb-6">
                     {selectedCategory 
-                      ? `В категории "${getCategoryName(selectedCategory)}" пока нет товаров. Попробуйте изменить фильтры или выбрать другую категорию.`
+                      ? `В категории &quot;${getCategoryName(selectedCategory)}&quot; пока нет товаров. Попробуйте изменить фильтры или выбрать другую категорию.`
                       : 'К сожалению, товары не загружены. Попробуйте обновить страницу.'
                     }
                   </p>
@@ -290,5 +291,23 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-slate-50 dark:bg-slate-900">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-slate-600 dark:text-slate-400">Загрузка...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

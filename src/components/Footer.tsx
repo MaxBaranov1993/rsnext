@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { 
-  Heart, 
   MapPin, 
   Phone, 
   Mail, 
@@ -14,20 +13,17 @@ import {
   Truck, 
   CreditCard, 
   Star, 
-  Users, 
-  ShoppingBag, 
-  Wrench,
   Facebook,
   Instagram,
   Twitter,
   Youtube,
-  Linkedin,
   Globe,
   ArrowRight,
   Download,
   QrCode
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -40,7 +36,7 @@ export function Footer() {
           <div className="space-y-4">
                          <div className="flex items-center space-x-2">
              <Link href="/">
-                 <img src="/svg/arrowlogo.svg" alt="rSALE Logo" className="h-6 w-auto filter brightness-0 invert" />
+                 <Image src="/svg/arrowlogo.svg" alt="rSALE Logo" width={24} height={24} className="h-6 w-auto filter brightness-0 invert" />
                </Link>
              </div>
             <p className="text-sm text-white leading-relaxed">

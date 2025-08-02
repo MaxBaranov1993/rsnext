@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { X, Upload, Plus, Trash2, Image as ImageIcon, Package, Briefcase } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { X, Upload, Plus, Trash2, Package, Briefcase } from "lucide-react";
 import { ProductCategory, ProductCondition } from "@/types/product";
+import Image from "next/image";
 
 interface AddListingModalProps {
   isOpen: boolean;
@@ -413,9 +414,11 @@ export function AddListingModal({ isOpen, onClose, onSubmit }: AddListingModalPr
                       {imageUrls.map((url, index) => (
                         <div key={index} className="relative group">
                           <div className="aspect-square rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
-                            <img
+                            <Image
                               src={url}
                               alt={`Фото ${index + 1}`}
+                              width={200}
+                              height={200}
                               className="w-full h-full object-cover"
                             />
                           </div>

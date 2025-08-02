@@ -23,7 +23,6 @@ interface ProductFiltersProps {
 }
 
 export function ProductFilters({ category, onFiltersChange, currentFilters, totalProducts }: ProductFiltersProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [maxPrice, setMaxPrice] = useState(1000000);
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([0, 1000000]);
 
@@ -33,7 +32,7 @@ export function ProductFilters({ category, onFiltersChange, currentFilters, tota
       try {
         const response = await fetch('/data/products.json');
         const data = await response.json();
-        const prices = data.products.map((product: any) => product.price);
+        const prices = data.products.map((product: { price: number }) => product.price);
         const max = Math.max(...prices);
         setMaxPrice(max);
         setLocalPriceRange([0, max]);
@@ -64,7 +63,7 @@ export function ProductFilters({ category, onFiltersChange, currentFilters, tota
     return categories[categoryId] || "Товары";
   }, []);
 
-  const handleFilterChange = useCallback((key: keyof FilterState, value: any) => {
+  const handleFilterChange = useCallback((key: keyof FilterState, value: unknown) => {
     onFiltersChange({
       ...currentFilters,
       [key]: value
@@ -72,18 +71,12 @@ export function ProductFilters({ category, onFiltersChange, currentFilters, tota
   }, [currentFilters, onFiltersChange]);
 
   // Debounced функция для изменения цены
-  const debouncedPriceChange = useCallback(
-    (() => {
-      let timeoutId: NodeJS.Timeout;
-      return (value: number[]) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          handleFilterChange('priceRange', [value[0], value[1]]);
-        }, 300);
-      };
-    })(),
-    [handleFilterChange]
-  );
+  const debouncedPriceChange = useCallback((value: number[]) => {
+    const timeoutId = setTimeout(() => {
+      handleFilterChange('priceRange', [value[0], value[1]]);
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [handleFilterChange]);
 
   const handlePriceRangeChange = useCallback((value: number[]) => {
     setLocalPriceRange([value[0], value[1]]);

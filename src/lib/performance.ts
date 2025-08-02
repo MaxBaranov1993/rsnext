@@ -4,7 +4,7 @@ export interface PerformanceMetric {
   value: number;
   unit: string;
   timestamp: number;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface WebVitals {
@@ -45,9 +45,13 @@ class PerformanceMonitor {
       // Отслеживание LCP (Largest Contentful Paint)
       new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
+          const lcpEntry = entry as PerformanceEntry & {
+            element?: Element;
+            size?: number;
+          };
           this.recordMetric('LCP', entry.startTime, 'ms', {
-            element: entry.element?.tagName,
-            size: entry.size,
+            element: lcpEntry.element?.tagName,
+            size: lcpEntry.size,
           });
         }
       }).observe({ entryTypes: ['largest-contentful-paint'] });
@@ -55,7 +59,10 @@ class PerformanceMonitor {
       // Отслеживание FID (First Input Delay)
       new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
-          this.recordMetric('FID', entry.processingStart - entry.startTime, 'ms', {
+          const fidEntry = entry as PerformanceEntry & {
+            processingStart?: number;
+          };
+          this.recordMetric('FID', (fidEntry.processingStart || 0) - entry.startTime, 'ms', {
             name: entry.name,
             type: entry.entryType,
           });
@@ -66,8 +73,12 @@ class PerformanceMonitor {
       let clsValue = 0;
       new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
-          if (!entry.hadRecentInput) {
-            clsValue += (entry as any).value;
+          const clsEntry = entry as PerformanceEntry & {
+            hadRecentInput?: boolean;
+            value?: number;
+          };
+          if (!clsEntry.hadRecentInput) {
+            clsValue += clsEntry.value || 0;
             this.recordMetric('CLS', clsValue, 'score');
           }
         }
@@ -104,7 +115,7 @@ class PerformanceMonitor {
   }
 
   // Запись метрики
-  private recordMetric(name: string, value: number, unit: string, context?: Record<string, any>) {
+  private recordMetric(name: string, value: number, unit: string, context?: Record<string, unknown>) {
     const metric: PerformanceMetric = {
       name,
       value,
@@ -143,21 +154,26 @@ class PerformanceMonitor {
   }
 
   // Отправка в собственную систему аналитики
-  private async sendToCustomAnalytics(metric: PerformanceMetric) {
+  private async sendToCustomAnalytics(_metric: PerformanceMetric) {
     try {
       // Здесь можно добавить отправку в собственную систему мониторинга
       // await fetch('/api/performance', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(metric),
+      //   body: JSON.stringify(_metric),
       // });
+      
+      // Временно логируем для разработки
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Performance metric:', _metric);
+      }
     } catch (error) {
       console.error('Failed to send performance metric:', error);
     }
   }
 
   // Ручное измерение времени выполнения
-  measureTime(name: string, fn: () => void | Promise<void>) {
+  measureTime<T>(name: string, fn: () => T): T {
     const start = performance.now();
     
     const result = fn();
@@ -166,7 +182,7 @@ class PerformanceMonitor {
       return result.finally(() => {
         const duration = performance.now() - start;
         this.recordMetric(name, duration, 'ms');
-      });
+      }) as T;
     } else {
       const duration = performance.now() - start;
       this.recordMetric(name, duration, 'ms');
@@ -249,7 +265,7 @@ export const performanceMonitor = new PerformanceMonitor();
 // Хук для использования мониторинга производительности в компонентах
 export function usePerformance() {
   return {
-    measureTime: performanceMonitor.measureTime.bind(performanceMonitor),
+    measureTime: performanceMonitor.measureTime.bind(performanceMonitor) as <T>(name: string, fn: () => T) => T,
     measureImageLoad: performanceMonitor.measureImageLoad.bind(performanceMonitor),
     getMetrics: performanceMonitor.getMetrics.bind(performanceMonitor),
     getWebVitals: performanceMonitor.getWebVitals.bind(performanceMonitor),

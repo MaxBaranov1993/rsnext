@@ -8,8 +8,9 @@ import { Product, ProductSeller } from "@/types/product";
 import { useProductImages } from "@/lib/hooks/useProductImages";
 import { useFavorites } from "@/lib/contexts/FavoritesContext";
 import { Suspense } from "react";
-import { Heart, MapPin, User, Star } from "lucide-react";
+import { Heart, MapPin, User, Star, Shield, Building2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { truncateProductTitleForCard } from "@/lib/utils";
 
 interface ProductCardProps {
@@ -26,8 +27,8 @@ export function ProductCard({ product }: ProductCardProps) {
 
 function ProductCardContent({ product }: ProductCardProps) {
   const { images, loading, error } = useProductImages({
-    productTitle: product.title,
     category: product.category,
+    productId: product.id,
     count: 3
   });
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -68,9 +69,11 @@ function ProductCardContent({ product }: ProductCardProps) {
                 {images.map((image, index) => (
                   <CarouselItem key={index}>
                     <div className="aspect-square overflow-hidden">
-                      <img
+                      <Image
                         src={image}
                         alt={`${product.title} - фото ${index + 1}`}
+                        width={400}
+                        height={400}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
@@ -104,8 +107,9 @@ function ProductCardContent({ product }: ProductCardProps) {
               </Badge>
             </div>
             
-            {/* Favorite Button */}
-            <div className="absolute top-2 right-2 z-10">
+            {/* Action Buttons */}
+            <div className="absolute top-2 right-2 z-10 flex flex-col space-y-1">
+              {/* Favorite Button */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -115,6 +119,7 @@ function ProductCardContent({ product }: ProductCardProps) {
                   e.stopPropagation();
                   toggleFavorite(product);
                 }}
+                title="Добавить в избранное"
               >
                 <Heart className={`h-4 w-4 ${
                   isFavorite(product.id) 
@@ -133,17 +138,28 @@ function ProductCardContent({ product }: ProductCardProps) {
             </h3>
             
             {/* Seller Info */}
-            <div className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
-              <User className="w-3 h-3" />
-              <span className="truncate">{product.seller?.name || 'Неизвестный продавец'}</span>
-              {product.seller?.verified && (
-                <Badge variant="outline" className="text-xs px-1 py-0 h-4">
-                  ✓
-                </Badge>
-              )}
-              <div className="flex items-center space-x-1">
+            <div className="space-y-1">
+              <div className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+                <User className="w-3 h-3" />
+                <span className="truncate font-medium text-slate-700 dark:text-slate-300">
+                  {product.seller?.name || 'Неизвестный продавец'}
+                </span>
+                {product.seller?.verified && (
+                  <Shield className="w-3 h-3 text-green-500 flex-shrink-0" />
+                )}
+                {product.seller?.type === "company" && (
+                  <Building2 className="w-3 h-3 text-blue-500 flex-shrink-0" />
+                )}
+              </div>
+              <div className="flex items-center space-x-1 text-xs text-slate-500 dark:text-slate-400">
                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                 <span>{product.seller?.rating || 'Н/Д'}</span>
+                {product.seller?.totalSales && (
+                  <>
+                    <span className="text-slate-400 dark:text-slate-500">•</span>
+                    <span>{product.seller.totalSales} продаж</span>
+                  </>
+                )}
               </div>
             </div>
             
@@ -176,17 +192,21 @@ function ProductCardContent({ product }: ProductCardProps) {
               )}
             </div>
             
-            {/* Price */}
+            {/* Price and Actions */}
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
                 {formatPrice(product.price)} ₽
               </span>
-              <div className="flex items-center space-x-1 text-xs text-slate-500 dark:text-slate-400">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <span>{product.views}</span>
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 text-xs text-slate-500 dark:text-slate-400">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span>{product.views}</span>
+                </div>
+                
+
               </div>
             </div>
           </div>

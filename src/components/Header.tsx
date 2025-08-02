@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -16,7 +17,7 @@ import { Menu, Plus, User, Heart, MessageCircle, Home, Package, Briefcase, Setti
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showMobileSearch, setShowMobileSearch] = useState(false);
+
   const [selectedCity, setSelectedCity] = useState("Москва");
   const [selectedLanguage, setSelectedLanguage] = useState("Русский");
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Состояние авторизации
@@ -75,9 +76,7 @@ export function Header() {
     checkAuth();
   }, []);
 
-  const handleMobileSearchClick = () => {
-    setShowMobileSearch(!showMobileSearch);
-  };
+
 
   const handleCitySelect = (city: string) => {
     setSelectedCity(city);
@@ -110,24 +109,7 @@ export function Header() {
 
   return (
     <>
-      {/* Mobile Search Overlay */}
-      {showMobileSearch && isScrolled && (
-        <div className="md:hidden md:fixed md:top-0 md:left-0 md:right-0 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 md:z-50 p-4">
-          <div className="relative">
-            <Input 
-              placeholder="Поиск..." 
-              className="pr-16"
-              autoFocus
-            />
-            <Button 
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-black hover:bg-gray-800 text-white text-sm"
-              size="sm"
-            >
-              Найти
-            </Button>
-          </div>
-        </div>
-      )}
+
 
       <header className={`md:sticky md:top-0 z-40 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-200 ${
         isScrolled ? 'shadow-md' : ''
@@ -140,7 +122,7 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                      <img src="/svg/serbia.svg" alt="Сербия" className="w-3 h-3 mr-1" />
+                      <Image src="/svg/serbia.svg" alt="Сербия" width={12} height={12} className="w-3 h-3 mr-1" />
                       <span className="text-xs">{selectedCity}</span>
                       <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -165,7 +147,7 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                      <img src={getCurrentLanguage().flag} alt={getCurrentLanguage().name} className="w-3 h-3 mr-1" />
+                      <Image src={getCurrentLanguage().flag} alt={getCurrentLanguage().name} width={12} height={12} className="w-3 h-3 mr-1" />
                       <span className="text-xs">{selectedLanguage}</span>
                       <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -179,7 +161,7 @@ export function Header() {
                         onClick={() => handleLanguageSelect(language.name)}
                         className={selectedLanguage === language.name ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
                       >
-                        <img src={language.flag} alt={language.name} className="w-4 h-4 mr-2" />
+                        <Image src={language.flag} alt={language.name} width={16} height={16} className="w-4 h-4 mr-2" />
                         <span>{language.name}</span>
                       </DropdownMenuItem>
                     ))}
@@ -194,7 +176,7 @@ export function Header() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-4">
               <Link href="/">
-                <img src="/svg/logo.svg" alt="rSALE Logo" className="hidden sm:block h-6 w-auto sm:h-8" />
+                <Image src="/svg/logo.svg" alt="rSALE Logo" width={32} height={32} className="hidden sm:block h-6 w-auto sm:h-8" />
               </Link>
               <Button variant="default" className="hidden sm:inline-flex bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm px-2 sm:px-4">
                 Категории

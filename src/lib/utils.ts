@@ -9,9 +9,30 @@ export function cn(...inputs: ClassValue[]) {
 // Загружаем данные товаров из JSON файла
 async function loadProducts(): Promise<Product[]> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/data/products.json`);
-    const data = await response.json();
-    return data.products || [];
+    // Пытаемся загрузить через fetch (для клиента)
+    if (typeof window !== 'undefined') {
+      const response = await fetch('/data/products.json', {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        console.error('Ошибка загрузки товаров:', response.status, response.statusText);
+        return [];
+      }
+      
+      const data = await response.json();
+      return data.products || [];
+    } else {
+      // Для сервера используем fs
+      const fs = await import('fs');
+      const path = await import('path');
+      const filePath = path.join(process.cwd(), 'public', 'data', 'products.json');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const data = JSON.parse(fileContent);
+      return data.products || [];
+    }
   } catch (error) {
     console.error('Ошибка загрузки товаров:', error);
     return [];
@@ -21,9 +42,30 @@ async function loadProducts(): Promise<Product[]> {
 // Загружаем данные продавцов из JSON файла
 async function loadSellers(): Promise<ProductSeller[]> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/data/sellers.json`);
-    const data = await response.json();
-    return data.sellers || [];
+    // Пытаемся загрузить через fetch (для клиента)
+    if (typeof window !== 'undefined') {
+      const response = await fetch('/data/sellers.json', {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        console.error('Ошибка загрузки продавцов:', response.status, response.statusText);
+        return [];
+      }
+      
+      const data = await response.json();
+      return data.sellers || [];
+    } else {
+      // Для сервера используем fs
+      const fs = await import('fs');
+      const path = await import('path');
+      const filePath = path.join(process.cwd(), 'public', 'data', 'sellers.json');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const data = JSON.parse(fileContent);
+      return data.sellers || [];
+    }
   } catch (error) {
     console.error('Ошибка загрузки продавцов:', error);
     return [];
@@ -45,12 +87,82 @@ export async function getSellerById(id: string): Promise<ProductSeller | null> {
 // Получаем товар с данными продавца
 export async function getProductWithSeller(id: string): Promise<(Product & { seller: ProductSeller | null }) | null> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/products/${id}`);
-    if (!response.ok) {
-      return null;
+    // Пытаемся загрузить через fetch (для клиента)
+    if (typeof window !== 'undefined') {
+      const [productsResponse, sellersResponse] = await Promise.all([
+        fetch('/data/products.json', {
+          headers: {
+            'Accept': 'application/json',
+          },
+        }),
+        fetch('/data/sellers.json', {
+          headers: {
+            'Accept': 'application/json',
+          },
+        })
+      ]);
+
+      if (!productsResponse.ok || !sellersResponse.ok) {
+        console.error('Ошибка загрузки данных:', {
+          productsOk: productsResponse.ok,
+          sellersOk: sellersResponse.ok,
+          productsStatus: productsResponse.status,
+          sellersStatus: sellersResponse.status
+        });
+        return null;
+      }
+
+      const [productsData, sellersData] = await Promise.all([
+        productsResponse.json(),
+        sellersResponse.json()
+      ]);
+
+      const products = productsData.products || [];
+      const sellers = sellersData.sellers || [];
+
+      const product = products.find((p: Product) => p.id === id);
+      if (!product) {
+        console.error('Товар не найден:', id);
+        return null;
+      }
+
+      const seller = sellers.find((s: ProductSeller) => s.id === product.sellerId);
+
+      return {
+        ...product,
+        seller: seller || null
+      };
+    } else {
+      // Для сервера используем fs
+      const fs = await import('fs');
+      const path = await import('path');
+      const productsPath = path.join(process.cwd(), 'public', 'data', 'products.json');
+      const sellersPath = path.join(process.cwd(), 'public', 'data', 'sellers.json');
+      
+      const [productsContent, sellersContent] = await Promise.all([
+        fs.promises.readFile(productsPath, 'utf8'),
+        fs.promises.readFile(sellersPath, 'utf8')
+      ]);
+      
+      const productsData = JSON.parse(productsContent);
+      const sellersData = JSON.parse(sellersContent);
+      
+      const products = productsData.products || [];
+      const sellers = sellersData.sellers || [];
+
+      const product = products.find((p: Product) => p.id === id);
+      if (!product) {
+        console.error('Товар не найден:', id);
+        return null;
+      }
+
+      const seller = sellers.find((s: ProductSeller) => s.id === product.sellerId);
+
+      return {
+        ...product,
+        seller: seller || null
+      };
     }
-    const data = await response.json();
-    return data;
   } catch (error) {
     console.error('Ошибка загрузки товара:', error);
     return null;
@@ -71,12 +183,78 @@ export async function getAllProducts(): Promise<Product[]> {
 // Получаем все товары с данными продавцов
 export async function getAllProductsWithSellers(): Promise<(Product & { seller: ProductSeller | null })[]> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/products`);
-    if (!response.ok) {
-      throw new Error('Ошибка загрузки товаров');
+    // Пытаемся загрузить через fetch (для клиента)
+    if (typeof window !== 'undefined') {
+      const [productsResponse, sellersResponse] = await Promise.all([
+        fetch('/data/products.json', {
+          headers: {
+            'Accept': 'application/json',
+          },
+        }),
+        fetch('/data/sellers.json', {
+          headers: {
+            'Accept': 'application/json',
+          },
+        })
+      ]);
+
+      if (!productsResponse.ok || !sellersResponse.ok) {
+        console.error('Ошибка загрузки данных:', {
+          productsOk: productsResponse.ok,
+          sellersOk: sellersResponse.ok,
+          productsStatus: productsResponse.status,
+          sellersStatus: sellersResponse.status
+        });
+        throw new Error('Ошибка загрузки данных');
+      }
+
+      const [productsData, sellersData] = await Promise.all([
+        productsResponse.json(),
+        sellersResponse.json()
+      ]);
+
+      const products = productsData.products || [];
+      const sellers = sellersData.sellers || [];
+
+      // Объединяем товары с данными продавцов
+      const productsWithSellers = products.map((product: Product) => {
+        const seller = sellers.find((s: ProductSeller) => s.id === product.sellerId);
+        return {
+          ...product,
+          seller: seller || null
+        };
+      });
+
+      return productsWithSellers;
+    } else {
+      // Для сервера используем fs
+      const fs = await import('fs');
+      const path = await import('path');
+      const productsPath = path.join(process.cwd(), 'public', 'data', 'products.json');
+      const sellersPath = path.join(process.cwd(), 'public', 'data', 'sellers.json');
+      
+      const [productsContent, sellersContent] = await Promise.all([
+        fs.promises.readFile(productsPath, 'utf8'),
+        fs.promises.readFile(sellersPath, 'utf8')
+      ]);
+      
+      const productsData = JSON.parse(productsContent);
+      const sellersData = JSON.parse(sellersContent);
+      
+      const products = productsData.products || [];
+      const sellers = sellersData.sellers || [];
+
+      // Объединяем товары с данными продавцов
+      const productsWithSellers = products.map((product: Product) => {
+        const seller = sellers.find((s: ProductSeller) => s.id === product.sellerId);
+        return {
+          ...product,
+          seller: seller || null
+        };
+      });
+
+      return productsWithSellers;
     }
-    const data = await response.json();
-    return data.products || [];
   } catch (error) {
     console.error('Ошибка загрузки товаров:', error);
     return [];

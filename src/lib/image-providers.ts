@@ -13,9 +13,9 @@ export const IMAGE_PROVIDERS = {
   placeholder: (width: number = 800, height: number = 600, text?: string) => 
     `https://via.placeholder.com/${width}x${height}${text ? `/${encodeURIComponent(text)}` : ''}`,
   
-  // Unsplash через прокси
-  unsplashProxy: (photoId: string, width: number = 800, height: number = 600) => 
-    `/api/unsplash?url=${encodeURIComponent(`https://images.unsplash.com/photo-${photoId}?w=${width}&h=${height}&fit=crop&auto=format`)}`,
+  // Unsplash напрямую (без прокси)
+  unsplash: (photoId: string, width: number = 800, height: number = 600) => 
+    `https://images.unsplash.com/photo-${photoId}?w=${width}&h=${height}&fit=crop&auto=format`,
   
   // Локальные изображения
   local: (path: string) => path

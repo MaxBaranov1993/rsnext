@@ -1,23 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/ProductCard";
 import { Carousel, CarouselItem } from "@/components/ui/carousel";
 import { useState, useEffect, Suspense } from "react";
-import { Product } from "@/types/product";
-import { useProducts } from "@/lib/hooks/useProducts";
+import { useProductsWithSellers } from "@/lib/hooks/useProducts";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { AddListingModal } from "@/components/AddListingModal";
-import { FavoritesModal } from "@/components/FavoritesModal";
-import { ProductCategory } from "@/types/product";
-import { ProductCondition } from "@/types/product";
 import { useFavorites } from "@/lib/contexts/FavoritesContext";
 import { 
   Car, 
@@ -28,21 +23,13 @@ import {
   Wrench, 
   Baby, 
   Package,
-  Heart,
-  Plus,
-  User,
-  MessageCircle,
-  Settings,
-  LogOut,
-  Search,
   Map
 } from "lucide-react";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [selectedCity, setSelectedCity] = useState("Москва");
-  const [selectedLanguage, setSelectedLanguage] = useState("Русский");
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAddListingModal, setShowAddListingModal] = useState(false);
@@ -51,7 +38,7 @@ export default function Home() {
   const [showMoreServices, setShowMoreServices] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
   
-  const { products, loading, error, hasMore, loadMore } = useProducts(15);
+  const { products } = useProductsWithSellers({ limit: 15, sortBy: 'publishedAt', sortOrder: 'desc' });
   const { favorites, favoritesCount, removeFromFavorites, clearFavorites } = useFavorites();
   const router = useRouter();
 
@@ -66,34 +53,9 @@ export default function Home() {
   const displayedProducts = showMoreProducts ? productsItems : productsItems.slice(0, maxProductsToShow);
   const displayedServices = showMoreServices ? servicesItems : servicesItems.slice(0, maxServicesToShow);
 
-  const serbianCities = [
-    "Белград",
-    "Нови Сад", 
-    "Ниш",
-    "Крагуевац",
-    "Суботица",
-    "Зренянин",
-    "Панчево",
-    "Чачак",
-    "Кралево",
-    "Нови Пазар",
-    "Крушевац",
-    "Ужице",
-    "Вране",
-    "Шабац",
-    "Сомбор",
-    "Смедерево",
-    "Лесковац",
-    "Вальево",
-    "Кикинда",
-    "Вршац"
-  ];
 
-  const languages = [
-    { name: "Српски", flag: "/svg/serbia.svg", code: "sr" },
-    { name: "English", flag: "/svg/eng.svg", code: "en" },
-    { name: "Русский", flag: "/svg/russia.svg", code: "ru" }
-  ];
+
+
 
   // Категории товаров
   const categories = [
@@ -171,17 +133,9 @@ export default function Home() {
     setShowMobileSearch(!showMobileSearch);
   };
 
-  const handleCitySelect = (city: string) => {
-    setSelectedCity(city);
-  };
 
-  const handleLanguageSelect = (language: string) => {
-    setSelectedLanguage(language);
-  };
 
-  const handleLoadMore = () => {
-    loadMore(); // Используем функцию loadMore из хука
-  };
+
 
   const handleProfileClick = () => {
     if (isAuthenticated) {
@@ -209,7 +163,7 @@ export default function Home() {
     }
   };
 
-  const handleAddListingSubmit = (data: any) => {
+  const handleAddListingSubmit = (data: { title: string; description: string; price: number; category: string; condition: string; location: string; images: File[]; type: 'product' | 'service' }) => {
     console.log("Новое объявление:", data);
     setShowAddListingModal(false);
     // Здесь будет логика сохранения объявления
@@ -223,13 +177,7 @@ export default function Home() {
     }
   };
 
-  const handleMapClick = () => {
-    setShowMapModal(true);
-  };
 
-  const getCurrentLanguage = () => {
-    return languages.find(lang => lang.name === selectedLanguage) || languages[2]; // По умолчанию русский
-  };
 
   // Функция для группировки категорий по 4 для карусели
   const chunkCategories = (arr: typeof categories, size: number) => {

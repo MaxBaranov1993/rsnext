@@ -65,8 +65,8 @@ export function ProductPageClient({ productData }: ProductPageClientProps) {
   const analytics = useAnalytics();
   
   const { images, loading: imagesLoading, error: imagesError } = useProductImages({
-    productTitle: productData.title,
     category: productData.category,
+    productId: productData.id,
     count: 5
   });
 

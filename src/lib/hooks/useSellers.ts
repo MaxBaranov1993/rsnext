@@ -1,83 +1,144 @@
-import { useState, useEffect, useCallback } from "react";
-import { api } from "../api";
+"use client";
 
-export function useSellers(limit: number = 10) {
-  const [sellers, setSellers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
+import { useState, useEffect } from 'react';
+import { ProductSeller } from '@/types/product';
 
-  const fetchSellers = useCallback(async (pageNum: number = 1) => {
-    try {
-      setLoading(true);
-      const data = await api.getSellers({
-        page: pageNum,
-        limit: limit
-      });
-      
-      if (pageNum === 1) {
-        setSellers(data.sellers);
-      } else {
-        setSellers(prev => [...prev, ...data.sellers]);
-      }
-      
-      setHasMore(data.pagination.hasNextPage);
-      setPage(pageNum);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка загрузки продавцов');
-    } finally {
-      setLoading(false);
-    }
-  }, [limit]);
-
-  const loadMore = useCallback(() => {
-    if (!loading && hasMore) {
-      fetchSellers(page + 1);
-    }
-  }, [loading, hasMore, page, fetchSellers]);
-
-  useEffect(() => {
-    fetchSellers(1);
-  }, [fetchSellers]);
-
-  return {
-    sellers,
-    loading,
-    error,
-    hasMore,
-    loadMore,
-    refetch: () => fetchSellers(1)
-  };
+interface UseSellersOptions {
+  type?: 'individual' | 'company';
+  location?: string;
+  verified?: boolean;
+  limit?: number;
+  sortBy?: 'rating' | 'totalSales' | 'memberSince';
+  sortOrder?: 'asc' | 'desc';
 }
 
-export function useSeller(id: string) {
-  const [seller, setSeller] = useState<any>(null);
+export function useSellers(options: UseSellersOptions = {}) {
+  const [sellers, setSellers] = useState<ProductSeller[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSeller = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await api.getSeller(id);
-      setSeller(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка загрузки продавца');
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+  useEffect(() => {
+    const fetchSellers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Загружаем данные из JSON файла
+        const response = await fetch('/data/sellers.json', {
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch sellers');
+        }
+
+        const data = await response.json();
+        let filteredSellers = data.sellers || [];
+
+        // Фильтрация по типу
+        if (options.type) {
+          filteredSellers = filteredSellers.filter(
+            (seller: ProductSeller) => seller.type === options.type
+          );
+        }
+
+        // Фильтрация по локации
+        if (options.location) {
+          filteredSellers = filteredSellers.filter(
+            (seller: ProductSeller) => seller.location === options.location
+          );
+        }
+
+        // Фильтрация по верификации
+        if (options.verified !== undefined) {
+          filteredSellers = filteredSellers.filter(
+            (seller: ProductSeller) => seller.verified === options.verified
+          );
+        }
+
+        // Сортировка
+        if (options.sortBy) {
+          filteredSellers.sort((a: ProductSeller, b: ProductSeller) => {
+            let aValue: string | number = a[options.sortBy!];
+            let bValue: string | number = b[options.sortBy!];
+
+            // Обработка дат
+            if (options.sortBy === 'memberSince') {
+              aValue = new Date(aValue).getTime();
+              bValue = new Date(bValue).getTime();
+            }
+
+            // Приведение к числу для арифметических операций
+            const aNum = typeof aValue === 'number' ? aValue : Number(aValue);
+            const bNum = typeof bValue === 'number' ? bValue : Number(bValue);
+
+            if (options.sortOrder === 'desc') {
+              return bNum - aNum;
+            }
+            return aNum - bNum;
+          });
+        }
+
+        // Ограничение количества
+        if (options.limit) {
+          filteredSellers = filteredSellers.slice(0, options.limit);
+        }
+
+        setSellers(filteredSellers);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch sellers');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSellers();
+  }, [options.type, options.location, options.verified, options.limit, options.sortBy, options.sortOrder]);
+
+  return { sellers, loading, error };
+}
+
+// Хук для получения одного продавца по ID
+export function useSeller(id: string) {
+  const [seller, setSeller] = useState<ProductSeller | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchSeller = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('/data/sellers.json', {
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch sellers');
+        }
+
+        const data = await response.json();
+        const foundSeller = data.sellers.find((s: ProductSeller) => s.id === id);
+
+        if (!foundSeller) {
+          throw new Error('Seller not found');
+        }
+
+        setSeller(foundSeller);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch seller');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (id) {
       fetchSeller();
     }
-  }, [fetchSeller]);
+  }, [id]);
 
-  return {
-    seller,
-    loading,
-    error,
-    refetch: fetchSeller
-  };
+  return { seller, loading, error };
 } 

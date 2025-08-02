@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Product, ProductSeller } from "@/types/product";
 import { useProductImages } from "@/lib/hooks/useProductImages";
 import { useFavorites } from "@/lib/contexts/FavoritesContext";
-import { Heart, MessageCircle, Share2, Star, MapPin, Eye, Calendar, Map, Phone, Shield, Building2, ArrowLeft } from "lucide-react";
+import { Heart, MessageCircle, Share2, Star, MapPin, Eye, Calendar, Map, Phone, Shield, Building2, ArrowLeft, Package, Users } from "lucide-react";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { Header } from "./Header";
 import { truncateProductTitleForBreadcrumbs, truncateText } from "@/lib/utils";
-import Link from "next/link";
+import { useNavigation } from "@/lib/hooks/useNavigation";
+import Image from "next/image";
 
 interface ProductDetailProps {
   product: Product & { seller?: ProductSeller | null };
@@ -27,12 +28,13 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
   const imageContainerRef = useRef<HTMLDivElement>(null);
   
   const { images, loading, error } = useProductImages({
-    productTitle: product.title,
     category: product.category,
+    productId: product.id,
     count: 5
   });
 
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { navigateToProducts, navigateToHome, goBack } = useNavigation();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU').format(price);
@@ -81,13 +83,13 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
     setCurrentImageIndex(index);
   };
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
+  }, [images.length]);
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+  }, [images.length]);
 
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -164,7 +166,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [images.length]);
+  }, [images.length, nextImage, prevImage]);
 
   if (loading || error || !images || images.length === 0) {
     return <ProductDetailSkeleton />;
@@ -180,25 +182,80 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
       {/* Header */}
       <Header />
 
-      {/* Mobile Back Button */}
+      {/* Mobile Navigation */}
       <div className="lg:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center space-x-3">
-            <Link href={`/products?category=${product.category}`} className="flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">
-              <ArrowLeft className="h-5 w-5 mr-1" />
-              <span className="text-sm">Назад</span>
-            </Link>
-            <div className="flex-1">
-              <Breadcrumbs items={breadcrumbItems} />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={goBack}
+                className="flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+              >
+                <ArrowLeft className="h-5 w-5 mr-1" />
+                <span className="text-sm">Назад</span>
+              </Button>
+              <div className="flex-1">
+                <Breadcrumbs items={breadcrumbItems} />
+              </div>
+            </div>
+            
+            {/* Mobile Action Buttons */}
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateToProducts({ category: product.category })}
+                className="flex items-center space-x-1"
+              >
+                <Package className="w-4 h-4" />
+                <span className="text-xs">Похожие</span>
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Desktop Breadcrumbs */}
+      {/* Desktop Navigation */}
       <div className="hidden lg:block bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
         <div className="container mx-auto px-4 py-4">
-          <Breadcrumbs items={breadcrumbItems} />
+          <div className="flex items-center justify-between">
+            <Breadcrumbs items={breadcrumbItems} />
+            
+            {/* Desktop Action Buttons */}
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateToProducts({ category: product.category })}
+                className="flex items-center space-x-2"
+              >
+                <Package className="w-4 h-4" />
+                <span>Похожие товары</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateToProducts()}
+                className="flex items-center space-x-2"
+              >
+                <Users className="w-4 h-4" />
+                <span>Все товары</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goBack}
+                className="flex items-center space-x-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Назад</span>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -219,9 +276,11 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
               onMouseLeave={handleMouseUp}
             >
               <div className="aspect-square overflow-hidden rounded-lg lg:rounded-xl">
-                <img
+                <Image
                   src={images[currentImageIndex]}
                   alt={`${product.title} - фото ${currentImageIndex + 1}`}
+                  width={800}
+                  height={600}
                   className="w-full h-full object-cover select-none"
                   draggable={false}
                 />
@@ -253,9 +312,11 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
                     className="flex-shrink-0 cursor-pointer"
                     onClick={() => handleThumbnailClick(index)}
                   >
-                    <img
+                    <Image
                       src={image}
                       alt={`Миниатюра ${index + 1}`}
+                      width={80}
+                      height={80}
                       className={`w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-lg transition-all duration-200 hover:opacity-80 ${
                         index === currentImageIndex 
                           ? 'opacity-100' 
@@ -442,6 +503,56 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
             </Card>
           </div>
         )}
+
+        {/* Навигационные кнопки */}
+        <div className="mt-8 lg:mt-12">
+          <Card>
+            <CardContent className="p-4 lg:p-6">
+              <h2 className="text-lg lg:text-xl font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                Навигация
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => navigateToProducts({ category: product.category })}
+                  className="flex items-center justify-center space-x-2 h-12"
+                >
+                  <Package className="w-4 h-4" />
+                  <span>Похожие товары</span>
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => navigateToProducts()}
+                  className="flex items-center justify-center space-x-2 h-12"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Все товары</span>
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={goBack}
+                  className="flex items-center justify-center space-x-2 h-12"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Назад</span>
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={navigateToHome}
+                  className="flex items-center justify-center space-x-2 h-12"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span>Главная</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
