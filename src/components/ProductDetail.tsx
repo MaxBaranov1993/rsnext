@@ -210,7 +210,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
       {/* Header */}
       <Header />
 
-      {/* Мобильная навигация с улучшенным UX */}
+      {/* Мобильная навигация */}
       <div className="lg:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-3">
@@ -286,10 +286,10 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
         </div>
       </div>
 
-      {/* Основной контент с оптимизированной структурой */}
+      {/* Основной контент */}
       <div className="container mx-auto px-4 py-4 lg:py-8 max-w-6xl">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
-          {/* Левая колонка - Изображения с улучшенным UX */}
+          {/* Левая колонка - Изображения */}
           <div className="space-y-4">
             <div 
               ref={imageContainerRef}
@@ -363,7 +363,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
               )}
             </div>
             
-            {/* Миниатюры с улучшенным скроллом */}
+            {/* Миниатюры */}
             {images.length > 1 && (
               <div 
                 ref={thumbnailRef}
@@ -397,9 +397,9 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
             )}
           </div>
 
-          {/* Правая колонка - Информация с улучшенной структурой */}
+          {/* Правая колонка - Информация */}
           <div className="space-y-6">
-            {/* Заголовок и цена с улучшенной типографикой */}
+            {/* Заголовок и цена */}
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-3">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-100 leading-tight flex-1 pr-2 min-w-0">
@@ -426,7 +426,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
               </div>
             </div>
 
-            {/* Геолокация с улучшенным дизайном */}
+            {/* Геолокация */}
             <Card className="border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 w-full overflow-hidden">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-start justify-between gap-4">
@@ -445,7 +445,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
                       </div>
                     </div>
                     
-                    {/* Адрес с улучшенным отображением */}
+                    {/* Адрес */}
                     {product.address && (
                       <div className="ml-13 sm:ml-13">
                         <div className="flex items-center gap-2 text-sm">
@@ -480,7 +480,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
               </CardContent>
             </Card>
 
-            {/* Статистика с улучшенным дизайном */}
+            {/* Статистика */}
             <div className="flex items-center gap-4 sm:gap-6 text-sm text-slate-600 dark:text-slate-400 flex-wrap">
               <div className="flex items-center gap-2">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800">
@@ -497,7 +497,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
               </div>
             </div>
 
-            {/* Продавец с улучшенной карточкой */}
+            {/* Продавец */}
             <Card className="w-full overflow-hidden">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-start gap-4 w-full">
@@ -545,7 +545,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
               </CardContent>
             </Card>
 
-            {/* Кнопки действий с улучшенным дизайном */}
+            {/* Кнопки действий */}
             <div className="space-y-4">
               <Button className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700">
                 <MessageCircle className="h-5 w-5 mr-3" />
@@ -565,7 +565,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
           </div>
         </div>
 
-        {/* Блок с описанием с улучшенной типографикой */}
+        {/* Блок с описанием */}
         {product.description && (
           <div className="mt-8 lg:mt-12 w-full">
             <Card className="w-full overflow-hidden">
@@ -583,7 +583,7 @@ export function ProductDetail({ product, onMapClick }: ProductDetailProps) {
           </div>
         )}
 
-        {/* Навигационные кнопки с улучшенным дизайном */}
+        {/* Навигационные кнопки */}
         <div className="mt-8 lg:mt-12 w-full">
           <Card className="w-full overflow-hidden">
             <CardContent className="p-4 sm:p-6 lg:p-8">

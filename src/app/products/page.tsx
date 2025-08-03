@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { getAllProductsWithSellers } from '@/lib/utils';
 import { ProductCard } from '@/components/ProductCard';
 import { Product, ProductSeller } from '@/types/product';
@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, X } from 'lucide-react';
 import Link from 'next/link';
+import { MobileNavigation } from '@/components/MobileNavigation';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface FilterState {
   priceRange: [number, number];
@@ -48,8 +50,11 @@ function getCategoryName(categoryId: string): string {
 
 function ProductsPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [productsWithSellers, setProductsWithSellers] = useState<(Product & { seller: ProductSeller | null })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const selectedCategory = searchParams.get('category');
 
@@ -61,6 +66,16 @@ function ProductsPageContent() {
     sellerType: [],
     verifiedOnly: false
   });
+
+  // Проверяем авторизацию при загрузке
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuthenticated(!!token);
+    };
+    
+    checkAuth();
+  }, []);
 
   // Загружаем товары и устанавливаем максимальную цену
   useEffect(() => {
@@ -154,6 +169,16 @@ function ProductsPageContent() {
   const handleFiltersChange = useCallback((newFilters: FilterState) => {
     setFilters(newFilters);
   }, []);
+
+  const handleLogin = () => {
+    router.push('/login');
+    setShowAuthModal(false);
+  };
+
+  const handleRegister = () => {
+    router.push('/register');
+    setShowAuthModal(false);
+  };
 
   if (loading) {
     return (
@@ -290,6 +315,41 @@ function ProductsPageContent() {
           </Link>
         </div>
       </div>
+
+      {/* Mobile Navigation */}
+      <MobileNavigation 
+        isAuthenticated={isAuthenticated}
+        onAuthModalOpen={() => setShowAuthModal(true)}
+      />
+
+      {/* Auth Modal */}
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Войти в аккаунт</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-center text-gray-600 dark:text-gray-400">
+              Для доступа к профилю необходимо войти в аккаунт
+            </p>
+            <div className="flex flex-col space-y-3">
+              <Button 
+                onClick={handleLogin}
+                className="w-full bg-purple-600 hover:bg-purple-700"
+              >
+                Войти
+              </Button>
+              <Button 
+                onClick={handleRegister}
+                variant="outline"
+                className="w-full"
+              >
+                Регистрация
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

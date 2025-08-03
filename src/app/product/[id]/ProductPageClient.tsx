@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProductDetail } from '@/components/ProductDetail';
 import { Product } from '@/types/product';
 import { ProductSeller } from '@/types/product';
+import { MobileNavigation } from '@/components/MobileNavigation';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 interface ProductPageClientProps {
   product: Product & { seller?: ProductSeller | null };
@@ -11,9 +15,32 @@ interface ProductPageClientProps {
 
 export function ProductPageClient({ product }: ProductPageClientProps) {
   const [showMapModal, setShowMapModal] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const router = useRouter();
+
+  // Проверяем авторизацию при загрузке
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuthenticated(!!token);
+    };
+    
+    checkAuth();
+  }, []);
 
   const handleMapClick = () => {
     setShowMapModal(true);
+  };
+
+  const handleLogin = () => {
+    router.push('/login');
+    setShowAuthModal(false);
+  };
+
+  const handleRegister = () => {
+    router.push('/register');
+    setShowAuthModal(false);
   };
 
   return (
@@ -61,6 +88,41 @@ export function ProductPageClient({ product }: ProductPageClientProps) {
           </div>
         </div>
       )}
+
+      {/* Mobile Navigation */}
+      <MobileNavigation 
+        isAuthenticated={isAuthenticated}
+        onAuthModalOpen={() => setShowAuthModal(true)}
+      />
+
+      {/* Auth Modal */}
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Войти в аккаунт</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-center text-gray-600 dark:text-gray-400">
+              Для доступа к профилю необходимо войти в аккаунт
+            </p>
+            <div className="flex flex-col space-y-3">
+              <Button 
+                onClick={handleLogin}
+                className="w-full bg-purple-600 hover:bg-purple-700"
+              >
+                Войти
+              </Button>
+              <Button 
+                onClick={handleRegister}
+                variant="outline"
+                className="w-full"
+              >
+                Регистрация
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 } 

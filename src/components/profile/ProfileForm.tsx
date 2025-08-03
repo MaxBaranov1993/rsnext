@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActiveListings } from "@/components/profile/ActiveListings";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { MobileNavigation } from "@/components/MobileNavigation";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   User, 
   Mail, 
@@ -61,6 +63,8 @@ export function ProfileForm() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const router = useRouter();
   const [profileData, setProfileData] = useState<ProfileData>({
     id: "1",
@@ -90,6 +94,16 @@ export function ProfileForm() {
     postalCode: "",
     country: "Сербия"
   });
+
+  // Проверяем авторизацию при загрузке
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuthenticated(!!token);
+    };
+    
+    checkAuth();
+  }, []);
 
   const handleInputChange = (field: string, value: string | number | boolean) => {
     setProfileData(prev => ({
@@ -170,6 +184,16 @@ export function ProfileForm() {
     router.push('/');
   };
 
+  const handleLogin = () => {
+    router.push('/login');
+    setShowAuthModal(false);
+  };
+
+  const handleRegister = () => {
+    router.push('/register');
+    setShowAuthModal(false);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ru-RU', {
       year: 'numeric',
@@ -189,7 +213,7 @@ export function ProfileForm() {
               <span>Назад</span>
             </Link>
             <div className="flex items-center space-x-2">
-                              <Image src="/svg/arrowlogo.svg" alt="rSALE" width={24} height={24} className="h-6 w-6" />
+                              <Image src="/svg/arrowlogo.svg" alt="rSALE" width={24} height={24} className="h-6 w-6 w-auto" />
               <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">Личный кабинет</span>
             </div>
             <div className="w-10"></div> {/* Spacer for centering */}
@@ -675,6 +699,41 @@ export function ProfileForm() {
           </Tabs>
         </div>
       </div>
+
+      {/* Mobile Navigation */}
+      <MobileNavigation 
+        isAuthenticated={isAuthenticated}
+        onAuthModalOpen={() => setShowAuthModal(true)}
+      />
+
+      {/* Auth Modal */}
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Войти в аккаунт</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-center text-gray-600 dark:text-gray-400">
+              Для доступа к профилю необходимо войти в аккаунт
+            </p>
+            <div className="flex flex-col space-y-3">
+              <Button 
+                onClick={handleLogin}
+                className="w-full bg-purple-600 hover:bg-purple-700"
+              >
+                Войти
+              </Button>
+              <Button 
+                onClick={handleRegister}
+                variant="outline"
+                className="w-full"
+              >
+                Регистрация
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

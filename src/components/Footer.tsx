@@ -36,7 +36,7 @@ export function Footer() {
           <div className="space-y-6">
             <div className="flex items-center space-x-2">
               <Link href="/">
-                <Image src="/svg/arrowlogo.svg" alt="rSALE Logo" width={24} height={24} className="h-6 w-auto filter brightness-0 invert" />
+                <Image src="/svg/arrowlogo.svg" alt="rSALE Logo" width={24} height={24} className="h-6 w-auto filter brightness-0 invert w-auto" />
               </Link>
             </div>
             <p className="text-sm text-white leading-relaxed">

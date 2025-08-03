@@ -122,7 +122,7 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                      <Image src="/svg/serbia.svg" alt="Сербия" width={12} height={12} className="w-3 h-3 mr-1" />
+                      <Image src="/svg/serbia.svg" alt="Сербия" width={12} height={12} className="w-3 h-3 mr-1 w-auto" />
                       <span className="text-xs">{selectedCity}</span>
                       <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -147,7 +147,7 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                      <Image src={getCurrentLanguage().flag} alt={getCurrentLanguage().name} width={12} height={12} className="w-3 h-3 mr-1" />
+                      <Image src={getCurrentLanguage().flag} alt={getCurrentLanguage().name} width={12} height={12} className="w-3 h-3 mr-1 w-auto" />
                       <span className="text-xs">{selectedLanguage}</span>
                       <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -161,7 +161,7 @@ export function Header() {
                         onClick={() => handleLanguageSelect(language.name)}
                         className={selectedLanguage === language.name ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
                       >
-                        <Image src={language.flag} alt={language.name} width={16} height={16} className="w-4 h-4 mr-2" />
+                        <Image src={language.flag} alt={language.name} width={16} height={16} className="w-4 h-4 mr-2 w-auto" />
                         <span>{language.name}</span>
                       </DropdownMenuItem>
                     ))}
@@ -176,7 +176,7 @@ export function Header() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-4">
               <Link href="/">
-                <Image src="/svg/logo.svg" alt="rSALE Logo" width={32} height={32} className="hidden sm:block h-6 w-auto sm:h-8" />
+                <Image src="/svg/logo.svg" alt="rSALE Logo" width={32} height={32} className="hidden sm:block h-6 w-auto sm:h-8 w-auto" />
               </Link>
               <Button variant="default" className="hidden sm:inline-flex bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm px-2 sm:px-4">
                 Категории
@@ -287,11 +287,11 @@ export function Header() {
             {/* Мобильное меню */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="sm:hidden">
+                <Button variant="ghost" size="icon" className="sm:hidden h-10 w-10">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80">
+              <SheetContent side="right" className="w-80 sm:w-96">
                 <SheetHeader>
                   <SheetTitle className="text-left">Меню</SheetTitle>
                 </SheetHeader>
@@ -299,17 +299,17 @@ export function Header() {
                 <div className="mt-6 space-y-4">
                   {/* Основные пункты меню */}
                   <div className="space-y-2">
-                    <Link href="/" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <Link href="/" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                       <Home className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                       <span className="text-slate-900 dark:text-slate-100">Главная</span>
                     </Link>
                     
-                    <Link href="/products" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <Link href="/products" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                       <Package className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                       <span className="text-slate-900 dark:text-slate-100">Товары</span>
                     </Link>
                     
-                    <Link href="/services" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <Link href="/services" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                       <Briefcase className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                       <span className="text-slate-900 dark:text-slate-100">Услуги</span>
                     </Link>
@@ -318,7 +318,7 @@ export function Header() {
                   {/* Кнопка добавления объявления */}
                   {isAuthenticated && (
                     <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-                      <Link href="/add-listing" className="flex items-center space-x-3 p-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white">
+                      <Link href="/add-listing" className="flex items-center space-x-3 p-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors">
                         <Plus className="h-5 w-5" />
                         <span>Добавить объявление</span>
                       </Link>
@@ -329,7 +329,7 @@ export function Header() {
                   <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
                     <button 
                       onClick={handleFavoritesClick}
-                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 w-full text-left"
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 w-full text-left transition-colors"
                     >
                       <Heart className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                       <span className="text-slate-900 dark:text-slate-100">Избранное</span>
@@ -340,7 +340,7 @@ export function Header() {
                       )}
                     </button>
                     
-                    <Link href="/messages" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <Link href="/messages" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                       <MessageCircle className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                       <span className="text-slate-900 dark:text-slate-100">Сообщения</span>
                       <Badge variant="destructive" className="ml-auto">3</Badge>
@@ -351,19 +351,19 @@ export function Header() {
                   <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
                     {isAuthenticated ? (
                       <>
-                        <Link href="/profile" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <Link href="/profile" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                           <User className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                           <span className="text-slate-900 dark:text-slate-100">Профиль</span>
                         </Link>
                         
-                        <Link href="/settings" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <Link href="/settings" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                           <Settings className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                           <span className="text-slate-900 dark:text-slate-100">Настройки</span>
                         </Link>
                         
                         <button 
                           onClick={handleLogout}
-                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 w-full text-left"
+                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 w-full text-left transition-colors"
                         >
                           <LogOut className="h-5 w-5 text-red-600 dark:text-red-400" />
                           <span className="text-red-600 dark:text-red-400">Выйти</span>
@@ -371,12 +371,12 @@ export function Header() {
                       </>
                     ) : (
                       <div className="space-y-2">
-                        <Link href="/login" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <Link href="/login" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                           <User className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                           <span className="text-slate-900 dark:text-slate-100">Войти</span>
                         </Link>
                         
-                        <Link href="/register" className="flex items-center space-x-3 p-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white">
+                        <Link href="/register" className="flex items-center space-x-3 p-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
                           <User className="h-5 w-5" />
                           <span>Регистрация</span>
                         </Link>
