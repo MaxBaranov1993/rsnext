@@ -116,7 +116,7 @@ export function Header() {
       }`}>
         {/* Верхняя панель с городом и языком */}
         <div className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-gray-200 dark:border-gray-700">
-          <div className="container mx-auto px-4 py-3">
+          <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-3">
             <div className="flex items-center justify-between">
               {/* Выбор города */}
               <div className="flex items-center space-x-6">
@@ -210,7 +210,7 @@ export function Header() {
           </div>
         </div>
         
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 sm:space-x-6">
               <Link href="/" className="flex items-center space-x-2 group">

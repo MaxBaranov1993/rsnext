@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden w-full`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden w-full bg-slate-50 dark:bg-slate-900`}
       >
         <FavoritesProvider>
           {children}

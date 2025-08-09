@@ -184,7 +184,7 @@ function ProductsPageContent() {
     return (
       <div className="bg-slate-50 dark:bg-slate-900">
         <Header />
-        <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-8 max-w-full overflow-x-hidden">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto"></div>
             <p className="mt-4 text-slate-600 dark:text-slate-400">Загрузка товаров...</p>
@@ -199,7 +199,7 @@ function ProductsPageContent() {
       {/* Header */}
       <Header />
 
-      <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
+      <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-8 max-w-full overflow-x-hidden">
         {/* Хлебные крошки */}
         <div className="mb-6">
           <Breadcrumbs 

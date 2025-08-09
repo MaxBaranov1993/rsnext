@@ -178,7 +178,7 @@ export default function Home() {
 
        {/* Categories Section */}
        <section className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700">
-         <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+         <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-6 sm:py-8 max-w-full overflow-x-hidden">
           {/* Desktop Grid - только для больших экранов */}
           <div className="hidden lg:grid lg:grid-cols-8 gap-4">
             {categories.map((category) => (
@@ -246,7 +246,7 @@ export default function Home() {
 
              {/* Products Section */}
        <section className="bg-slate-50 dark:bg-slate-800 py-8">
-         <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
+         <div className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-full overflow-x-hidden">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
@@ -311,7 +311,7 @@ export default function Home() {
 
              {/* Services Section */}
        <section className="bg-white dark:bg-slate-900 py-8">
-         <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
+         <div className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-full overflow-x-hidden">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
