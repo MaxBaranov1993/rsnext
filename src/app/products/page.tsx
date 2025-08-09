@@ -184,7 +184,7 @@ function ProductsPageContent() {
     return (
       <div className="bg-slate-50 dark:bg-slate-900">
         <Header />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto"></div>
             <p className="mt-4 text-slate-600 dark:text-slate-400">Загрузка товаров...</p>
@@ -199,7 +199,7 @@ function ProductsPageContent() {
       {/* Header */}
       <Header />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
         {/* Хлебные крошки */}
         <div className="mb-6">
           <Breadcrumbs 
@@ -212,7 +212,7 @@ function ProductsPageContent() {
 
         {/* Заголовок и фильтры */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                 {selectedCategory ? getCategoryName(selectedCategory) : 'Все товары'}
@@ -226,28 +226,26 @@ function ProductsPageContent() {
                 )}
               </p>
             </div>
-            
-            <div className="flex items-center space-x-3">
-              {/* Кнопка очистки фильтра */}
-              {selectedCategory && (
-                <Link href="/products">
-                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
-                    <X className="h-4 w-4" />
-                    <span>Очистить фильтр</span>
-                  </Button>
-                </Link>
-              )}
-            </div>
           </div>
 
           {/* Активный фильтр */}
           {selectedCategory && (
-            <div className="flex items-center space-x-2 mb-6">
-              <Badge variant="secondary" className="text-sm">
-                {getCategoryName(selectedCategory)}
-              </Badge>
-              <Link href="/products" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-                Очистить
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <Badge variant="secondary" className="text-sm">
+                  {getCategoryName(selectedCategory)}
+                </Badge>
+                <Link href="/products" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
+                  Очистить
+                </Link>
+              </div>
+              
+              {/* Кнопка очистки фильтра */}
+              <Link href="/products">
+                <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                  <X className="h-4 w-4" />
+                  <span>Очистить фильтр</span>
+                </Button>
               </Link>
             </div>
           )}
@@ -359,7 +357,7 @@ export default function ProductsPage() {
     <Suspense fallback={
       <div className="bg-slate-50 dark:bg-slate-900">
         <Header />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto"></div>
             <p className="mt-4 text-slate-600 dark:text-slate-400">Загрузка...</p>

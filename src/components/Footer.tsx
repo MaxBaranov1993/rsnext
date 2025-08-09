@@ -29,7 +29,7 @@ export function Footer() {
   return (
     <footer className="bg-black text-slate-300">
       {/* Основной контент футера */}
-      <div className="container mx-auto px-6 py-16">
+      <div className="container mx-auto px-6 py-16 max-w-full overflow-x-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           
           {/* О компании */}

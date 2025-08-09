@@ -158,3 +158,58 @@
   opacity: 1;
   pointer-events: auto;
 }
+
+/* Mobile horizontal scroll fix */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal overflow on mobile */
+.container, .container-fluid {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Ensure dropdown menus are visible */
+[data-radix-popper-content-wrapper] {
+  overflow: visible !important;
+}
+
+[data-radix-dropdown-menu-content] {
+  overflow: visible !important;
+}
+
+/* Ensure header elements are properly positioned */
+header {
+  position: relative;
+  z-index: 40;
+}
+
+/* Ensure top bar is visible */
+.bg-slate-50 {
+  position: relative;
+  z-index: 41;
+}
+
+/* Ensure all elements respect container boundaries */
+img, video, iframe, canvas, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for flexbox items that might overflow */
+.flex, .flex-col, .flex-row {
+  min-width: 0;
+}
+
+/* Prevent text overflow */
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

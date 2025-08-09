@@ -13,7 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FavoritesButton } from "@/components/FavoritesButton";
 import { useFavorites } from "@/lib/contexts/FavoritesContext";
 import { Input } from "@/components/ui/input";
-import { Menu, Plus, User, Heart, MessageCircle, Home, Package, Briefcase, Settings, LogOut } from "lucide-react";
+import { Menu, Plus, User, Heart, MessageCircle, Home, Package, Briefcase, Settings, LogOut, MapPin, Globe, ChevronDown } from "lucide-react";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -111,60 +111,98 @@ export function Header() {
     <>
 
 
-      <header className={`md:sticky md:top-0 z-40 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-200 ${
+      <header className={`md:sticky md:top-0 z-40 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-200 overflow-x-hidden ${
         isScrolled ? 'shadow-md' : ''
       }`}>
         {/* Верхняя панель с городом и языком */}
-        <div className="bg-slate-50 dark:bg-slate-800 border-b border-gray-200 dark:border-gray-700">
-          <div className="container mx-auto px-4 py-2">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-              <div className="flex items-center space-x-4">
+        <div className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-gray-200 dark:border-gray-700">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              {/* Выбор города */}
+              <div className="flex items-center space-x-6">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                      <Image src="/svg/serbia.svg" alt="Сербия" width={12} height={12} className="w-3 h-3 mr-1 w-auto" />
-                      <span className="text-xs">{selectedCity}</span>
-                      <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 px-3 text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-white/50 dark:hover:bg-slate-700/50 transition-all duration-200 rounded-lg"
+                    >
+                      <MapPin className="w-4 h-4 mr-2 text-purple-500" />
+                      <span className="text-sm font-medium">{selectedCity}</span>
+                      <ChevronDown className="w-3 h-3 ml-1 opacity-60" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    {serbianCities.map((city) => (
-                      <DropdownMenuItem 
-                        key={city}
-                        onClick={() => handleCitySelect(city)}
-                        className={selectedCity === city ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
-                      >
-                        {city}
-                      </DropdownMenuItem>
-                    ))}
+                  <DropdownMenuContent align="start" className="w-48">
+                    <div className="p-2">
+                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 px-2">
+                        Выберите город
+                      </div>
+                      {serbianCities.map((city) => (
+                        <DropdownMenuItem 
+                          key={city}
+                          onClick={() => handleCitySelect(city)}
+                          className={`flex items-center px-3 py-2 rounded-md transition-colors ${
+                            selectedCity === city 
+                              ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 font-medium" 
+                              : "hover:bg-slate-50 dark:hover:bg-slate-800"
+                          }`}
+                        >
+                          <MapPin className="w-3 h-3 mr-2 text-purple-500" />
+                          {city}
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
               
+              {/* Выбор языка */}
               <div className="flex items-center space-x-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400">
-                      <Image src={getCurrentLanguage().flag} alt={getCurrentLanguage().name} width={12} height={12} className="w-3 h-3 mr-1 w-auto" />
-                      <span className="text-xs">{selectedLanguage}</span>
-                      <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 px-3 text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-white/50 dark:hover:bg-slate-700/50 transition-all duration-200 rounded-lg"
+                    >
+                      <Globe className="w-4 h-4 mr-2 text-purple-500" />
+                      <Image 
+                        src={getCurrentLanguage().flag} 
+                        alt={getCurrentLanguage().name} 
+                        width={16} 
+                        height={16} 
+                        className="w-4 h-4 mr-2 rounded-sm" 
+                      />
+                      <span className="text-sm font-medium">{selectedLanguage}</span>
+                      <ChevronDown className="w-3 h-3 ml-1 opacity-60" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {languages.map((language) => (
-                      <DropdownMenuItem 
-                        key={language.code}
-                        onClick={() => handleLanguageSelect(language.name)}
-                        className={selectedLanguage === language.name ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : ""}
-                      >
-                        <Image src={language.flag} alt={language.name} width={16} height={16} className="w-4 h-4 mr-2 w-auto" />
-                        <span>{language.name}</span>
-                      </DropdownMenuItem>
-                    ))}
+                  <DropdownMenuContent align="end" className="w-48">
+                    <div className="p-2">
+                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 px-2">
+                        Выберите язык
+                      </div>
+                      {languages.map((language) => (
+                        <DropdownMenuItem 
+                          key={language.code}
+                          onClick={() => handleLanguageSelect(language.name)}
+                          className={`flex items-center px-3 py-2 rounded-md transition-colors ${
+                            selectedLanguage === language.name 
+                              ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 font-medium" 
+                              : "hover:bg-slate-50 dark:hover:bg-slate-800"
+                          }`}
+                        >
+                          <Image 
+                            src={language.flag} 
+                            alt={language.name} 
+                            width={20} 
+                            height={20} 
+                            className="w-5 h-5 mr-3 rounded-sm" 
+                          />
+                          <span>{language.name}</span>
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -174,13 +212,17 @@ export function Header() {
         
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/">
-                <Image src="/svg/logo.svg" alt="rSALE Logo" width={32} height={32} className="hidden sm:block h-6 w-auto sm:h-8 w-auto" />
+            <div className="flex items-center space-x-3 sm:space-x-6">
+              <Link href="/" className="flex items-center space-x-2 group">
+                <Image 
+                  src="/svg/logo.svg" 
+                  alt="rSALE Logo" 
+                  width={160} 
+                  height={160} 
+                  className="hidden sm:block h-12 w-12 sm:h-34 sm:w-34 transition-transform duration-200 group-hover:scale-105" 
+                  priority
+                />
               </Link>
-              <Button variant="default" className="hidden sm:inline-flex bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm px-2 sm:px-4">
-                Категории
-              </Button>
             </div>
             
             {/* Mobile Search */}
@@ -188,10 +230,10 @@ export function Header() {
               <div className="relative">
                 <Input 
                   placeholder="Поиск..." 
-                  className="pr-16"
+                  className="pr-16 border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
                 />
                 <Button 
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-black hover:bg-gray-800 text-white text-sm"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 px-4 bg-purple-600 hover:bg-purple-700 text-white text-sm transition-colors duration-200"
                   size="sm"
                 >
                   Найти
@@ -203,10 +245,10 @@ export function Header() {
               <div className="relative w-full">
                 <Input 
                   placeholder="Поиск товаров, услуг, компаний..." 
-                  className="pr-16"
+                  className="pr-16 border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
                 />
                 <Button 
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 px-3 bg-black hover:bg-gray-800 text-white text-sm"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 px-4 bg-purple-600 hover:bg-purple-700 text-white text-sm transition-colors duration-200"
                   size="sm"
                 >
                   Найти
@@ -214,9 +256,9 @@ export function Header() {
               </div>
             </div>
             
-            <div className="hidden sm:flex items-center space-x-4">
+            <div className="hidden sm:flex items-center space-x-3">
               {isAuthenticated && (
-                <Button asChild variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">
+                <Button asChild variant="default" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
                   <Link href="/add-listing">
                     <Plus className="h-4 w-4 mr-2" />
                     <span className="hidden lg:inline">Добавить объявление</span>
@@ -227,10 +269,8 @@ export function Header() {
               
               <FavoritesButton />
               
-              <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/20 relative">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
+              <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/20 relative transition-all duration-200 hover:border-purple-300 hover:text-purple-700">
+                <MessageCircle className="w-4 h-4" />
                 <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
                   3
                 </Badge>
@@ -240,14 +280,10 @@ export function Header() {
                 // Если пользователь авторизован - показываем только профиль
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20">
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
+                    <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20 transition-all duration-200">
+                      <User className="w-4 h-4 mr-2" />
                       <span className="hidden lg:inline">Профиль</span>
-                      <svg className="w-2 h-2 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <ChevronDown className="w-3 h-3 ml-1 opacity-60" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
@@ -269,14 +305,14 @@ export function Header() {
                 </DropdownMenu>
               ) : (
                 // Если пользователь не авторизован - показываем кнопки входа и регистрации
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <Link href="/login">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/20 transition-all duration-200">
                       Войти
                     </Button>
                   </Link>
                   <Link href="/register">
-                    <Button variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+                    <Button variant="default" size="sm" className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-200">
                       Регистрация
                     </Button>
                   </Link>
